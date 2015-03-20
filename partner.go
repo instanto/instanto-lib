@@ -1,4 +1,4 @@
-package instanto_lib_db
+package instantolib
 
 import (
 	"time"
@@ -23,12 +23,12 @@ type Partner struct {
 	RelResearchLineCreatedAt int64  `json:"research_line_created_at,omitempty"`
 }
 
-func PartnerCreate(name, web string, sameDepartment bool, scope string, createdBy string) (id int64, verr *ValidationError, err error) {
-	verr = PartnerValidate(name, web, sameDepartment, scope)
+func (dbp *DBProvider) PartnerCreate(name, web string, sameDepartment bool, scope string, createdBy string) (id int64, verr *ValidationError, err error) {
+	verr = partnerValidate(name, web, sameDepartment, scope)
 	if verr != nil {
 		return
 	}
-	db, err := DBGet()
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -55,12 +55,12 @@ func PartnerCreate(name, web string, sameDepartment bool, scope string, createdB
 	}
 	return
 }
-func PartnerUpdate(id int64, name, web string, sameDepartment bool, scope string, updatedBy string) (numRows int64, verr *ValidationError, err error) {
-	verr = PartnerValidate(name, web, sameDepartment, scope)
+func (dbp *DBProvider) PartnerUpdate(id int64, name, web string, sameDepartment bool, scope string, updatedBy string) (numRows int64, verr *ValidationError, err error) {
+	verr = partnerValidate(name, web, sameDepartment, scope)
 	if verr != nil {
 		return
 	}
-	db, err := DBGet()
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -87,8 +87,8 @@ func PartnerUpdate(id int64, name, web string, sameDepartment bool, scope string
 	}
 	return
 }
-func PartnerUpdateLogo(id int64, logo string, updatedBy string) (numRows int64, verr *ValidationError, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) PartnerUpdateLogo(id int64, logo string, updatedBy string) (numRows int64, verr *ValidationError, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -115,8 +115,8 @@ func PartnerUpdateLogo(id int64, logo string, updatedBy string) (numRows int64, 
 	}
 	return
 }
-func PartnerDelete(id int64) (numRows int64, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) PartnerDelete(id int64) (numRows int64, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -137,8 +137,8 @@ func PartnerDelete(id int64) (numRows int64, err error) {
 	}
 	return
 }
-func PartnerGetAll() (partners []*Partner, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) PartnerGetAll() (partners []*Partner, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -168,9 +168,9 @@ func PartnerGetAll() (partners []*Partner, err error) {
 	}
 	return
 }
-func PartnerGetById(id int64) (partner *Partner, err error) {
+func (dbp *DBProvider) PartnerGetById(id int64) (partner *Partner, err error) {
 	partner = &Partner{}
-	db, err := DBGet()
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -187,8 +187,8 @@ func PartnerGetById(id int64) (partner *Partner, err error) {
 	}
 	return
 }
-func PartnerGetByMember(memberId int64) (partners []*Partner, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) PartnerGetByMember(memberId int64) (partners []*Partner, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -218,8 +218,8 @@ func PartnerGetByMember(memberId int64) (partners []*Partner, err error) {
 	}
 	return
 }
-func PartnerGetByResearchLine(researchLineId int64) (partners []*Partner, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) PartnerGetByResearchLine(researchLineId int64) (partners []*Partner, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -249,8 +249,8 @@ func PartnerGetByResearchLine(researchLineId int64) (partners []*Partner, err er
 	}
 	return
 }
-func PartnerCount() (count int64, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) PartnerCount() (count int64, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -267,8 +267,8 @@ func PartnerCount() (count int64, err error) {
 	}
 	return
 }
-func PartnerExists(id int64) (exists bool, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) PartnerExists(id int64) (exists bool, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -290,8 +290,8 @@ func PartnerExists(id int64) (exists bool, err error) {
 	exists = true
 	return
 }
-func PartnerAddMember(id, memberId int64, createdBy string) (verr *ValidationError, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) PartnerAddMember(id, memberId int64, createdBy string) (verr *ValidationError, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -319,8 +319,8 @@ func PartnerAddMember(id, memberId int64, createdBy string) (verr *ValidationErr
 	}
 	return
 }
-func PartnerRemoveMember(id, memberId int64) (removed bool, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) PartnerRemoveMember(id, memberId int64) (removed bool, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -345,13 +345,13 @@ func PartnerRemoveMember(id, memberId int64) (removed bool, err error) {
 	return
 }
 
-func PartnerGetMembers(id int64) (members []*Member, err error) {
-	members, err = MemberGetByPartner(id)
+func (dbp *DBProvider) PartnerGetMembers(id int64) (members []*Member, err error) {
+	members, err = dbp.MemberGetByPartner(id)
 	return
 }
 
-func PartnerAddResearchLine(id, researchLineId int64, createdBy string) (verr *ValidationError, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) PartnerAddResearchLine(id, researchLineId int64, createdBy string) (verr *ValidationError, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -379,8 +379,8 @@ func PartnerAddResearchLine(id, researchLineId int64, createdBy string) (verr *V
 	}
 	return
 }
-func PartnerRemoveResearchLine(id, researchLineId int64) (removed bool, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) PartnerRemoveResearchLine(id, researchLineId int64) (removed bool, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -405,11 +405,11 @@ func PartnerRemoveResearchLine(id, researchLineId int64) (removed bool, err erro
 	return
 }
 
-func PartnerGetResearchLines(id int64) (researchLines []*ResearchLine, err error) {
-	researchLines, err = ResearchLineGetByPartner(id)
+func (dbp *DBProvider) PartnerGetResearchLines(id int64) (researchLines []*ResearchLine, err error) {
+	researchLines, err = dbp.ResearchLineGetByPartner(id)
 	return
 }
-func PartnerGetColumns() []string {
+func (dbp *DBProvider) PartnerGetColumns() []string {
 	columns := []string{
 		"id",
 		"name",
@@ -424,31 +424,31 @@ func PartnerGetColumns() []string {
 	}
 	return columns
 }
-func PartnerValidateName(name string) (verr *ValidationError) {
-	if verr = ValidateNotEmpty("name", name); verr != nil {
+func partnerValidateName(name string) (verr *ValidationError) {
+	if verr = validateNotEmpty("name", name); verr != nil {
 		return verr
 	}
-	return ValidateLength("name", name, 200)
+	return validateLength("name", name, 200)
 }
-func PartnerValidateWeb(web string) (verr *ValidationError) {
-	return ValidateLength("web", web, 200)
+func partnerValidateWeb(web string) (verr *ValidationError) {
+	return validateLength("web", web, 200)
 }
-func PartnerValidateLogo(logo string) (verr *ValidationError) {
-	return ValidateLength("logo", logo, 200)
+func partnerValidateLogo(logo string) (verr *ValidationError) {
+	return validateLength("logo", logo, 200)
 }
-func PartnerValidateScope(scope string) (verr *ValidationError) {
-	return ValidateScope("scope", scope)
+func partnerValidateScope(scope string) (verr *ValidationError) {
+	return validateScope("scope", scope)
 }
-func PartnerValidate(name, web string, sameDepartment bool, scope string) (verr *ValidationError) {
-	verr = PartnerValidateName(name)
+func partnerValidate(name, web string, sameDepartment bool, scope string) (verr *ValidationError) {
+	verr = partnerValidateName(name)
 	if verr != nil {
 		return
 	}
-	verr = PartnerValidateWeb(web)
+	verr = partnerValidateWeb(web)
 	if verr != nil {
 		return
 	}
-	verr = PartnerValidateScope(scope)
+	verr = partnerValidateScope(scope)
 	if verr != nil {
 		return
 	}

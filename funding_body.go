@@ -1,4 +1,4 @@
-package instanto_lib_db
+package instantolib
 
 import (
 	"time"
@@ -22,12 +22,12 @@ type FundingBody struct {
 	RelFinancedProjectUpdatedAt int64  `json:"financed_project_updated_at,omitempty"`
 }
 
-func FundingBodyCreate(name, web, scope string, createdBy string) (id int64, verr *ValidationError, err error) {
-	verr = FundingBodyValidate(name, web, scope)
+func (dbp *DBProvider) FundingBodyCreate(name, web, scope string, createdBy string) (id int64, verr *ValidationError, err error) {
+	verr = fundingBodyValidate(name, web, scope)
 	if verr != nil {
 		return
 	}
-	db, err := DBGet()
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -54,12 +54,12 @@ func FundingBodyCreate(name, web, scope string, createdBy string) (id int64, ver
 	}
 	return
 }
-func FundingBodyUpdate(id int64, name, web, scope string, updatedBy string) (numRows int64, verr *ValidationError, err error) {
-	verr = FundingBodyValidate(name, web, scope)
+func (dbp *DBProvider) FundingBodyUpdate(id int64, name, web, scope string, updatedBy string) (numRows int64, verr *ValidationError, err error) {
+	verr = fundingBodyValidate(name, web, scope)
 	if verr != nil {
 		return
 	}
-	db, err := DBGet()
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -86,8 +86,8 @@ func FundingBodyUpdate(id int64, name, web, scope string, updatedBy string) (num
 	}
 	return
 }
-func FundingBodyDelete(id int64) (numRows int64, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) FundingBodyDelete(id int64) (numRows int64, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -108,8 +108,8 @@ func FundingBodyDelete(id int64) (numRows int64, err error) {
 	}
 	return
 }
-func FundingBodyGetAll() (fundingBodys []*FundingBody, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) FundingBodyGetAll() (fundingBodys []*FundingBody, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -139,9 +139,9 @@ func FundingBodyGetAll() (fundingBodys []*FundingBody, err error) {
 	}
 	return
 }
-func FundingBodyGetById(id int64) (fundingBody *FundingBody, err error) {
+func (dbp *DBProvider) FundingBodyGetById(id int64) (fundingBody *FundingBody, err error) {
 	fundingBody = &FundingBody{}
-	db, err := DBGet()
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -158,8 +158,8 @@ func FundingBodyGetById(id int64) (fundingBody *FundingBody, err error) {
 	}
 	return
 }
-func FundingBodyGetByFinancedProject(financedProjectId int64) (fundingBodies []*FundingBody, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) FundingBodyGetByFinancedProject(financedProjectId int64) (fundingBodies []*FundingBody, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -189,8 +189,8 @@ func FundingBodyGetByFinancedProject(financedProjectId int64) (fundingBodies []*
 	}
 	return
 }
-func FundingBodyCount() (count int64, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) FundingBodyCount() (count int64, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -207,8 +207,8 @@ func FundingBodyCount() (count int64, err error) {
 	}
 	return
 }
-func FundingBodyExists(id int64) (exists bool, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) FundingBodyExists(id int64) (exists bool, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -231,12 +231,12 @@ func FundingBodyExists(id int64) (exists bool, err error) {
 	return
 }
 
-func FundingBodyAddFinancedProject(id, financedProjectId int64, record, createdBy string) (verr *ValidationError, err error) {
-	verr = FundingBodyValidateRecord(record)
+func (dbp *DBProvider) FundingBodyAddFinancedProject(id, financedProjectId int64, record, createdBy string) (verr *ValidationError, err error) {
+	verr = fundingBodyValidateRecord(record)
 	if verr != nil {
 		return
 	}
-	financedProject, err := FinancedProjectGetById(financedProjectId)
+	financedProject, err := dbp.FinancedProjectGetById(financedProjectId)
 	if err != nil {
 		return
 	}
@@ -244,7 +244,7 @@ func FundingBodyAddFinancedProject(id, financedProjectId int64, record, createdB
 		verr = &ValidationError{"financed_project", "this financed project has this funding body as primary"}
 		return
 	}
-	db, err := DBGet()
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -272,8 +272,8 @@ func FundingBodyAddFinancedProject(id, financedProjectId int64, record, createdB
 	}
 	return
 }
-func FundingBodyRemoveFinancedProject(id, financedProjectId int64) (removed bool, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) FundingBodyRemoveFinancedProject(id, financedProjectId int64) (removed bool, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -298,12 +298,12 @@ func FundingBodyRemoveFinancedProject(id, financedProjectId int64) (removed bool
 	return
 }
 
-func FundingBodyGetFinancedProjects(id int64) (financedProjects []*FinancedProject, err error) {
-	financedProjects, err = FinancedProjectGetByFundingBody(id)
+func (dbp *DBProvider) FundingBodyGetFinancedProjects(id int64) (financedProjects []*FinancedProject, err error) {
+	financedProjects, err = dbp.FinancedProjectGetByFundingBody(id)
 	return
 }
 
-func FundingBodyGetColumns() []string {
+func (dbp *DBProvider) FundingBodyGetColumns() []string {
 	columns := []string{
 		"id",
 		"name",
@@ -316,31 +316,31 @@ func FundingBodyGetColumns() []string {
 	}
 	return columns
 }
-func FundingBodyValidateName(name string) (verr *ValidationError) {
-	if verr = ValidateNotEmpty("name", name); verr != nil {
+func fundingBodyValidateName(name string) (verr *ValidationError) {
+	if verr = validateNotEmpty("name", name); verr != nil {
 		return verr
 	}
-	return ValidateLength("name", name, 200)
+	return validateLength("name", name, 200)
 }
-func FundingBodyValidateWeb(web string) (verr *ValidationError) {
-	return ValidateLength("web", web, 200)
+func fundingBodyValidateWeb(web string) (verr *ValidationError) {
+	return validateLength("web", web, 200)
 }
-func FundingBodyValidateScope(scope string) (verr *ValidationError) {
-	return ValidateScope("scope", scope)
+func fundingBodyValidateScope(scope string) (verr *ValidationError) {
+	return validateScope("scope", scope)
 }
-func FundingBodyValidateRecord(record string) (err *ValidationError) {
-	return ValidateLength("record", record, 200)
+func fundingBodyValidateRecord(record string) (err *ValidationError) {
+	return validateLength("record", record, 200)
 }
-func FundingBodyValidate(name, web, scope string) (verr *ValidationError) {
-	verr = FundingBodyValidateName(name)
+func fundingBodyValidate(name, web, scope string) (verr *ValidationError) {
+	verr = fundingBodyValidateName(name)
 	if verr != nil {
 		return
 	}
-	verr = FundingBodyValidateWeb(web)
+	verr = fundingBodyValidateWeb(web)
 	if verr != nil {
 		return
 	}
-	verr = FundingBodyValidateScope(scope)
+	verr = fundingBodyValidateScope(scope)
 	if verr != nil {
 		return
 	}

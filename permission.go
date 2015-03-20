@@ -1,4 +1,4 @@
-package instanto_lib_db
+package instantolib
 
 import (
 	_ "github.com/go-sql-driver/mysql"
@@ -9,8 +9,8 @@ type Permission struct {
 	DisplayName string `json:"display_name"`
 }
 
-func PermissionGetAll() (permissions []*Permission, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) PermissionGetAll() (permissions []*Permission, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -40,9 +40,9 @@ func PermissionGetAll() (permissions []*Permission, err error) {
 	}
 	return
 }
-func PermissionGetById(id string) (permission *Permission, err error) {
+func (dbp *DBProvider) PermissionGetById(id string) (permission *Permission, err error) {
 	permission = &Permission{}
-	db, err := DBGet()
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -60,8 +60,8 @@ func PermissionGetById(id string) (permission *Permission, err error) {
 	return
 }
 
-func PermissionGetByRol(rolId string) (permissions []*Permission, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) PermissionGetByRol(rolId string) (permissions []*Permission, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -94,8 +94,8 @@ func PermissionGetByRol(rolId string) (permissions []*Permission, err error) {
 
 /*
 
-func MemberAddPartner(id, partnerId int64, createdBy string) (verr *ValidationError, err error) {
-	db, err := DBGet()
+func(dbp *DBProvider) MemberAddPartner(id, partnerId int64, createdBy string) (verr *ValidationError, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -123,8 +123,8 @@ func MemberAddPartner(id, partnerId int64, createdBy string) (verr *ValidationEr
 	}
 	return
 }
-func MemberRemovePartner(id, partnerId int64) (removed bool, err error) {
-	db, err := DBGet()
+func(dbp *DBProvider) MemberRemovePartner(id, partnerId int64) (removed bool, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -149,13 +149,13 @@ func MemberRemovePartner(id, partnerId int64) (removed bool, err error) {
 	return
 }
 
-func MemberGetPartners(id int64) (partners []*Partner, err error) {
+func(dbp *DBProvider) MemberGetPartners(id int64) (partners []*Partner, err error) {
 	partners, err = PartnerGetByMember(id)
 	return
 }
 */
-func PermissionCount() (count int64, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) PermissionCount() (count int64, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -172,8 +172,8 @@ func PermissionCount() (count int64, err error) {
 	}
 	return
 }
-func PermissionExists(id string) (exists bool, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) PermissionExists(id string) (exists bool, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -195,7 +195,7 @@ func PermissionExists(id string) (exists bool, err error) {
 	exists = true
 	return
 }
-func PermissionGetColumns() []string {
+func (dbp *DBProvider) PermissionGetColumns() []string {
 	columns := []string{
 		"id",
 		"display_name",

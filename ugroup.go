@@ -1,4 +1,4 @@
-package instanto_lib_db
+package instantolib
 
 import (
 	_ "github.com/go-sql-driver/mysql"
@@ -9,12 +9,12 @@ type UGroup struct {
 	DisplayName string `json:"display_name"`
 }
 
-func UGroupCreate(id, displayName string) (verr *ValidationError, err error) {
-	verr = UGroupValidate(displayName)
+func (dbp *DBProvider) UGroupCreate(id, displayName string) (verr *ValidationError, err error) {
+	verr = uGroupValidate(displayName)
 	if verr != nil {
 		return
 	}
-	db, err := DBGet()
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -41,12 +41,12 @@ func UGroupCreate(id, displayName string) (verr *ValidationError, err error) {
 	}
 	return
 }
-func UGroupUpdate(id, display_name string) (numRows int64, verr *ValidationError, err error) {
-	verr = UGroupValidate(display_name)
+func (dbp *DBProvider) UGroupUpdate(id, display_name string) (numRows int64, verr *ValidationError, err error) {
+	verr = uGroupValidate(display_name)
 	if verr != nil {
 		return
 	}
-	db, err := DBGet()
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -72,8 +72,8 @@ func UGroupUpdate(id, display_name string) (numRows int64, verr *ValidationError
 	}
 	return
 }
-func UGroupDelete(id string) (numRows int64, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) UGroupDelete(id string) (numRows int64, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -94,8 +94,8 @@ func UGroupDelete(id string) (numRows int64, err error) {
 	}
 	return
 }
-func UGroupGetAll() (groups []*UGroup, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) UGroupGetAll() (groups []*UGroup, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -125,9 +125,9 @@ func UGroupGetAll() (groups []*UGroup, err error) {
 	}
 	return
 }
-func UGroupGetById(id string) (group *UGroup, err error) {
+func (dbp *DBProvider) UGroupGetById(id string) (group *UGroup, err error) {
 	group = &UGroup{}
-	db, err := DBGet()
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -144,8 +144,8 @@ func UGroupGetById(id string) (group *UGroup, err error) {
 	}
 	return
 }
-func UGroupCount() (count int64, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) UGroupCount() (count int64, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -162,8 +162,8 @@ func UGroupCount() (count int64, err error) {
 	}
 	return
 }
-func UGroupExists(id string) (exists bool, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) UGroupExists(id string) (exists bool, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -185,21 +185,21 @@ func UGroupExists(id string) (exists bool, err error) {
 	exists = true
 	return
 }
-func UGroupGetColumns() []string {
+func (dbp *DBProvider) UGroupGetColumns() []string {
 	columns := []string{
 		"id",
 		"display_name",
 	}
 	return columns
 }
-func UGroupValidateDisplayName(displayName string) (verr *ValidationError) {
-	if verr = ValidateNotEmpty("display_name", displayName); verr != nil {
+func uGroupValidateDisplayName(displayName string) (verr *ValidationError) {
+	if verr = validateNotEmpty("display_name", displayName); verr != nil {
 		return verr
 	}
-	return ValidateLength("display_name", displayName, 200)
+	return validateLength("display_name", displayName, 200)
 }
-func UGroupValidate(displayName string) (verr *ValidationError) {
-	verr = UGroupValidateDisplayName(displayName)
+func uGroupValidate(displayName string) (verr *ValidationError) {
+	verr = uGroupValidateDisplayName(displayName)
 	if verr != nil {
 		return
 	}

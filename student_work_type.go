@@ -1,4 +1,4 @@
-package instanto_lib_db
+package instantolib
 
 import (
 	"time"
@@ -15,12 +15,12 @@ type StudentWorkType struct {
 	UpdatedAt int64  `json:"updated_at"`
 }
 
-func StudentWorkTypeCreate(name, createdBy string) (id int64, verr *ValidationError, err error) {
-	verr = StudentWorkTypeValidate(name)
+func (dbp *DBProvider) StudentWorkTypeCreate(name, createdBy string) (id int64, verr *ValidationError, err error) {
+	verr = studentWorkTypeValidate(name)
 	if verr != nil {
 		return
 	}
-	db, err := DBGet()
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -47,12 +47,12 @@ func StudentWorkTypeCreate(name, createdBy string) (id int64, verr *ValidationEr
 	}
 	return
 }
-func StudentWorkTypeUpdate(id int64, name, updatedBy string) (numRows int64, verr *ValidationError, err error) {
-	verr = StudentWorkTypeValidate(name)
+func (dbp *DBProvider) StudentWorkTypeUpdate(id int64, name, updatedBy string) (numRows int64, verr *ValidationError, err error) {
+	verr = studentWorkTypeValidate(name)
 	if verr != nil {
 		return
 	}
-	db, err := DBGet()
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -79,8 +79,8 @@ func StudentWorkTypeUpdate(id int64, name, updatedBy string) (numRows int64, ver
 	}
 	return
 }
-func StudentWorkTypeDelete(id int64) (numRows int64, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) StudentWorkTypeDelete(id int64) (numRows int64, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -101,8 +101,8 @@ func StudentWorkTypeDelete(id int64) (numRows int64, err error) {
 	}
 	return
 }
-func StudentWorkTypeGetAll() (studentWorkTypes []*StudentWorkType, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) StudentWorkTypeGetAll() (studentWorkTypes []*StudentWorkType, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -132,9 +132,9 @@ func StudentWorkTypeGetAll() (studentWorkTypes []*StudentWorkType, err error) {
 	}
 	return
 }
-func StudentWorkTypeGetById(id int64) (studentWorkType *StudentWorkType, err error) {
+func (dbp *DBProvider) StudentWorkTypeGetById(id int64) (studentWorkType *StudentWorkType, err error) {
 	studentWorkType = &StudentWorkType{}
-	db, err := DBGet()
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -151,8 +151,8 @@ func StudentWorkTypeGetById(id int64) (studentWorkType *StudentWorkType, err err
 	}
 	return
 }
-func StudentWorkTypeCount() (count int64, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) StudentWorkTypeCount() (count int64, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -169,8 +169,8 @@ func StudentWorkTypeCount() (count int64, err error) {
 	}
 	return
 }
-func StudentWorkTypeExists(id int64) (exists bool, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) StudentWorkTypeExists(id int64) (exists bool, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -192,7 +192,7 @@ func StudentWorkTypeExists(id int64) (exists bool, err error) {
 	exists = true
 	return
 }
-func StudentWorkTypeGetColumns() []string {
+func (dbp *DBProvider) StudentWorkTypeGetColumns() []string {
 	columns := []string{
 		"id",
 		"name",
@@ -203,15 +203,15 @@ func StudentWorkTypeGetColumns() []string {
 	}
 	return columns
 }
-func StudentWorkTypeValidateName(name string) (verr *ValidationError) {
-	if verr = ValidateNotEmpty("name", name); verr != nil {
+func studentWorkTypeValidateName(name string) (verr *ValidationError) {
+	if verr = validateNotEmpty("name", name); verr != nil {
 		return verr
 	}
-	return ValidateLength("name", name, 200)
+	return validateLength("name", name, 200)
 }
 
-func StudentWorkTypeValidate(name string) (verr *ValidationError) {
-	verr = StudentWorkTypeValidateName(name)
+func studentWorkTypeValidate(name string) (verr *ValidationError) {
+	verr = studentWorkTypeValidateName(name)
 	if verr != nil {
 		return
 	}

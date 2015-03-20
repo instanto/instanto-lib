@@ -1,33 +1,33 @@
-package instanto_lib_db
+package instantolib
 
 import "fmt"
 
-func ValidateDegree(field, value string) *ValidationError {
+func validateDegree(field, value string) *ValidationError {
 	if value != "none" && value != "dr" && value != "dra" {
 		return &ValidationError{field, "value must be none, dr or dra"}
 	}
 	return nil
 }
 
-func ValidateScope(field, value string) *ValidationError {
+func validateScope(field, value string) *ValidationError {
 	if value != "regional" && value != "national" && value != "international" {
 		return &ValidationError{field, "value must be regional, national or international"}
 	}
 	return nil
 }
-func ValidateNotEmpty(field, value string) *ValidationError {
+func validateNotEmpty(field, value string) *ValidationError {
 	if len(field) == 0 {
 		return &ValidationError{field, "cannot be empty"}
 	}
 	return nil
 }
-func ValidateIsNumber(field string, value int64) *ValidationError {
+func validateIsNumber(field string, value int64) *ValidationError {
 	if value < 0 {
 		return &ValidationError{field, fmt.Sprintf("must be greater than %d", value)}
 	}
 	return nil
 }
-func ValidateLength(field, value string, length int) *ValidationError {
+func validateLength(field, value string, length int) *ValidationError {
 	if len(value) > length {
 		return &ValidationError{field, fmt.Sprintf("length cannot be greater than %d", length)}
 	}

@@ -1,4 +1,4 @@
-package instanto_lib_db
+package instantolib
 
 import (
 	"time"
@@ -18,12 +18,12 @@ type ResearchArea struct {
 	RelResearchLineCreatedAt int64  `json:"research_line_created_at,omitempty"`
 }
 
-func ResearchAreaCreate(name, createdBy string) (id int64, verr *ValidationError, err error) {
-	verr = ResearchAreaValidate(name)
+func (dbp *DBProvider) ResearchAreaCreate(name, createdBy string) (id int64, verr *ValidationError, err error) {
+	verr = researchAreaValidate(name)
 	if verr != nil {
 		return
 	}
-	db, err := DBGet()
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -50,12 +50,12 @@ func ResearchAreaCreate(name, createdBy string) (id int64, verr *ValidationError
 	}
 	return
 }
-func ResearchAreaUpdate(id int64, name, updatedBy string) (numRows int64, verr *ValidationError, err error) {
-	verr = ResearchAreaValidate(name)
+func (dbp *DBProvider) ResearchAreaUpdate(id int64, name, updatedBy string) (numRows int64, verr *ValidationError, err error) {
+	verr = researchAreaValidate(name)
 	if verr != nil {
 		return
 	}
-	db, err := DBGet()
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -82,8 +82,8 @@ func ResearchAreaUpdate(id int64, name, updatedBy string) (numRows int64, verr *
 	}
 	return
 }
-func ResearchAreaUpdateLogo(id int64, logo string, updatedBy string) (numRows int64, verr *ValidationError, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) ResearchAreaUpdateLogo(id int64, logo string, updatedBy string) (numRows int64, verr *ValidationError, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -110,8 +110,8 @@ func ResearchAreaUpdateLogo(id int64, logo string, updatedBy string) (numRows in
 	}
 	return
 }
-func ResearchAreaDelete(id int64) (numRows int64, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) ResearchAreaDelete(id int64) (numRows int64, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -132,8 +132,8 @@ func ResearchAreaDelete(id int64) (numRows int64, err error) {
 	}
 	return
 }
-func ResearchAreaGetAll() (researchAreas []*ResearchArea, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) ResearchAreaGetAll() (researchAreas []*ResearchArea, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -163,9 +163,9 @@ func ResearchAreaGetAll() (researchAreas []*ResearchArea, err error) {
 	}
 	return
 }
-func ResearchAreaGetById(id int64) (researchArea *ResearchArea, err error) {
+func (dbp *DBProvider) ResearchAreaGetById(id int64) (researchArea *ResearchArea, err error) {
 	researchArea = &ResearchArea{}
-	db, err := DBGet()
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -182,8 +182,8 @@ func ResearchAreaGetById(id int64) (researchArea *ResearchArea, err error) {
 	}
 	return
 }
-func ResearchAreaGetByResearchLine(researchLineId int64) (researchAreas []*ResearchArea, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) ResearchAreaGetByResearchLine(researchLineId int64) (researchAreas []*ResearchArea, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -213,8 +213,8 @@ func ResearchAreaGetByResearchLine(researchLineId int64) (researchAreas []*Resea
 	}
 	return
 }
-func ResearchAreaCount() (count int64, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) ResearchAreaCount() (count int64, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -231,8 +231,8 @@ func ResearchAreaCount() (count int64, err error) {
 	}
 	return
 }
-func ResearchAreaExists(id int64) (exists bool, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) ResearchAreaExists(id int64) (exists bool, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -254,8 +254,8 @@ func ResearchAreaExists(id int64) (exists bool, err error) {
 	exists = true
 	return
 }
-func ResearchAreaAddResearchLine(id, researchLineId int64, createdBy string) (verr *ValidationError, err error) {
-	researchLine, err := ResearchLineGetById(researchLineId)
+func (dbp *DBProvider) ResearchAreaAddResearchLine(id, researchLineId int64, createdBy string) (verr *ValidationError, err error) {
+	researchLine, err := dbp.ResearchLineGetById(researchLineId)
 	if err != nil {
 		return
 	}
@@ -263,7 +263,7 @@ func ResearchAreaAddResearchLine(id, researchLineId int64, createdBy string) (ve
 		verr = &ValidationError{"research_line", "this research line has this research area as primary"}
 		return
 	}
-	db, err := DBGet()
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -291,8 +291,8 @@ func ResearchAreaAddResearchLine(id, researchLineId int64, createdBy string) (ve
 	}
 	return
 }
-func ResearchAreaRemoveResearchLine(id, researchLineId int64) (removed bool, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) ResearchAreaRemoveResearchLine(id, researchLineId int64) (removed bool, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -317,11 +317,11 @@ func ResearchAreaRemoveResearchLine(id, researchLineId int64) (removed bool, err
 	return
 }
 
-func ResearchAreaGetResearchLines(id int64) (researchLines []*ResearchLine, err error) {
-	researchLines, err = ResearchLineGetByResearchArea(id)
+func (dbp *DBProvider) ResearchAreaGetResearchLines(id int64) (researchLines []*ResearchLine, err error) {
+	researchLines, err = dbp.ResearchLineGetByResearchArea(id)
 	return
 }
-func ResearchAreaGetColumns() []string {
+func (dbp *DBProvider) ResearchAreaGetColumns() []string {
 	columns := []string{
 		"id",
 		"name",
@@ -333,14 +333,14 @@ func ResearchAreaGetColumns() []string {
 	}
 	return columns
 }
-func ResearchAreaValidateName(name string) (verr *ValidationError) {
-	if verr = ValidateNotEmpty("name", name); verr != nil {
+func researchAreaValidateName(name string) (verr *ValidationError) {
+	if verr = validateNotEmpty("name", name); verr != nil {
 		return verr
 	}
-	return ValidateLength("name", name, 200)
+	return validateLength("name", name, 200)
 }
-func ResearchAreaValidate(name string) (verr *ValidationError) {
-	verr = ResearchAreaValidateName(name)
+func researchAreaValidate(name string) (verr *ValidationError) {
+	verr = researchAreaValidateName(name)
 	if verr != nil {
 		return
 	}

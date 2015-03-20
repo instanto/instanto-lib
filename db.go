@@ -1,23 +1,25 @@
-package instanto_lib_db
+package instantolib
 
 import (
 	"database/sql"
 	_ "github.com/go-sql-driver/mysql"
-	"os"
 	"strings"
 )
 
-func DBGet() (db *sql.DB, err error) {
-	host := os.Getenv("INSTANTO_DB_DSN")
-	db, err = sql.Open("mysql", host)
+func NewDBProvider(dsn string) (*DBProvider, error) {
+	return &DBProvider{dsn}, nil
+}
+
+type DBProvider struct {
+	dsn string
+}
+
+func (dbp *DBProvider) getDB() (*sql.DB, error) {
+	db, err := sql.Open("mysql", dbp.dsn)
 	if err != nil {
-		return
+		return nil, err
 	}
-	err = db.Ping()
-	if err != nil {
-		return
-	}
-	return
+	return db, nil
 }
 
 // IsDbError1062 checks if the error is a Error 1062: Duplicate entry

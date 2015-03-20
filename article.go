@@ -1,4 +1,4 @@
-package instanto_lib_db
+package instantolib
 
 import (
 	"time"
@@ -20,12 +20,12 @@ type Article struct {
 	RelResearchLineCreatedAt int64  `json:"research_line_created_at,omitempty"`
 }
 
-func ArticleCreate(title, web string, date int64, createdBy string, newspaper int64) (id int64, verr *ValidationError, err error) {
-	verr = ArticleValidate(title, web, date)
+func (dbp *DBProvider) ArticleCreate(title, web string, date int64, createdBy string, newspaper int64) (id int64, verr *ValidationError, err error) {
+	verr = articleValidate(title, web, date)
 	if verr != nil {
 		return
 	}
-	db, err := DBGet()
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -52,12 +52,12 @@ func ArticleCreate(title, web string, date int64, createdBy string, newspaper in
 	}
 	return
 }
-func ArticleUpdate(id int64, title, web string, date int64, updatedBy string, newspaper int64) (numRows int64, verr *ValidationError, err error) {
-	verr = ArticleValidate(title, web, date)
+func (dbp *DBProvider) ArticleUpdate(id int64, title, web string, date int64, updatedBy string, newspaper int64) (numRows int64, verr *ValidationError, err error) {
+	verr = articleValidate(title, web, date)
 	if verr != nil {
 		return
 	}
-	db, err := DBGet()
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -84,8 +84,8 @@ func ArticleUpdate(id int64, title, web string, date int64, updatedBy string, ne
 	}
 	return
 }
-func ArticleDelete(id int64) (numRows int64, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) ArticleDelete(id int64) (numRows int64, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -106,8 +106,8 @@ func ArticleDelete(id int64) (numRows int64, err error) {
 	}
 	return
 }
-func ArticleGetAll() (articles []*Article, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) ArticleGetAll() (articles []*Article, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -137,9 +137,9 @@ func ArticleGetAll() (articles []*Article, err error) {
 	}
 	return
 }
-func ArticleGetById(id int64) (article *Article, err error) {
+func (dbp *DBProvider) ArticleGetById(id int64) (article *Article, err error) {
 	article = &Article{}
-	db, err := DBGet()
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -156,8 +156,8 @@ func ArticleGetById(id int64) (article *Article, err error) {
 	}
 	return
 }
-func ArticleGetByNewspaper(newspaperId int64) (articles []*Article, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) ArticleGetByNewspaper(newspaperId int64) (articles []*Article, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -187,8 +187,8 @@ func ArticleGetByNewspaper(newspaperId int64) (articles []*Article, err error) {
 	}
 	return
 }
-func ArticleGetByResearchLine(researchLineId int64) (articles []*Article, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) ArticleGetByResearchLine(researchLineId int64) (articles []*Article, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -218,8 +218,8 @@ func ArticleGetByResearchLine(researchLineId int64) (articles []*Article, err er
 	}
 	return
 }
-func ArticleCount() (count int64, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) ArticleCount() (count int64, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -236,8 +236,8 @@ func ArticleCount() (count int64, err error) {
 	}
 	return
 }
-func ArticleExists(id int64) (exists bool, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) ArticleExists(id int64) (exists bool, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -259,8 +259,8 @@ func ArticleExists(id int64) (exists bool, err error) {
 	exists = true
 	return
 }
-func ArticleAddResearchLine(id, researchLineId int64, createdBy string) (verr *ValidationError, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) ArticleAddResearchLine(id, researchLineId int64, createdBy string) (verr *ValidationError, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -288,8 +288,8 @@ func ArticleAddResearchLine(id, researchLineId int64, createdBy string) (verr *V
 	}
 	return
 }
-func ArticleRemoveResearchLine(id, researchLineId int64) (removed bool, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) ArticleRemoveResearchLine(id, researchLineId int64) (removed bool, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -315,11 +315,11 @@ func ArticleRemoveResearchLine(id, researchLineId int64) (removed bool, err erro
 	return
 }
 
-func ArticleGetResearchLines(id int64) (researchLines []*ResearchLine, err error) {
-	researchLines, err = ResearchLineGetByArticle(id)
+func (dbp *DBProvider) ArticleGetResearchLines(id int64) (researchLines []*ResearchLine, err error) {
+	researchLines, err = dbp.ResearchLineGetByArticle(id)
 	return
 }
-func ArticleGetColumns() []string {
+func (dbp *DBProvider) ArticleGetColumns() []string {
 	columns := []string{
 		"id",
 		"title",
@@ -333,28 +333,28 @@ func ArticleGetColumns() []string {
 	}
 	return columns
 }
-func ArticleValidateTitle(title string) (verr *ValidationError) {
-	if verr = ValidateNotEmpty("title", title); verr != nil {
+func articleValidateTitle(title string) (verr *ValidationError) {
+	if verr = validateNotEmpty("title", title); verr != nil {
 		return verr
 	}
-	return ValidateLength("title", title, 200)
+	return validateLength("title", title, 200)
 }
-func ArticleValidateWeb(web string) (verr *ValidationError) {
-	return ValidateLength("web", web, 200)
+func articleValidateWeb(web string) (verr *ValidationError) {
+	return validateLength("web", web, 200)
 }
-func ArticleValidateDate(date int64) (verr *ValidationError) {
-	return ValidateIsNumber("date", date)
+func articleValidateDate(date int64) (verr *ValidationError) {
+	return validateIsNumber("date", date)
 }
-func ArticleValidate(title, web string, date int64) (verr *ValidationError) {
-	verr = ArticleValidateTitle(title)
+func articleValidate(title, web string, date int64) (verr *ValidationError) {
+	verr = articleValidateTitle(title)
 	if verr != nil {
 		return
 	}
-	verr = ArticleValidateWeb(web)
+	verr = articleValidateWeb(web)
 	if verr != nil {
 		return
 	}
-	verr = ArticleValidateDate(date)
+	verr = articleValidateDate(date)
 	if verr != nil {
 		return
 	}

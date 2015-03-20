@@ -1,4 +1,4 @@
-package instanto_lib_db
+package instantolib
 
 import (
 	"time"
@@ -41,12 +41,12 @@ type Publication struct {
 	RelResearchLineCreatedAt int64  `json:"research_line_created_at,omitempty"`
 }
 
-func PublicationCreate(title string, year int64, bookTitle, chapter, city, country, conferenceName, edition, institution, isbn, issn, journal, language, nationality, number, organization, pages, school, series, volume, createdBy string, publicationType, publisher, primaryAuthor int64) (id int64, verr *ValidationError, err error) {
-	verr = PublicationValidate(title, year, bookTitle, chapter, city, country, conferenceName, edition, institution, isbn, issn, journal, language)
+func (dbp *DBProvider) PublicationCreate(title string, year int64, bookTitle, chapter, city, country, conferenceName, edition, institution, isbn, issn, journal, language, nationality, number, organization, pages, school, series, volume, createdBy string, publicationType, publisher, primaryAuthor int64) (id int64, verr *ValidationError, err error) {
+	verr = publicationValidate(title, year, bookTitle, chapter, city, country, conferenceName, edition, institution, isbn, issn, journal, language)
 	if verr != nil {
 		return
 	}
-	db, err := DBGet()
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -73,12 +73,12 @@ func PublicationCreate(title string, year int64, bookTitle, chapter, city, count
 	}
 	return
 }
-func PublicationUpdate(id int64, title string, year int64, booktitle, chapter, city, country, conferenceName, edition, institution, isbn, issn, journal, language, nationality, number, organization, pages, school, series, volume, updatedBy string, publicationType, publisher, primaryAuthor int64) (numRows int64, verr *ValidationError, err error) {
-	verr = PublicationValidate(title, year, booktitle, chapter, city, country, conferenceName, edition, institution, isbn, issn, journal, language)
+func (dbp *DBProvider) PublicationUpdate(id int64, title string, year int64, booktitle, chapter, city, country, conferenceName, edition, institution, isbn, issn, journal, language, nationality, number, organization, pages, school, series, volume, updatedBy string, publicationType, publisher, primaryAuthor int64) (numRows int64, verr *ValidationError, err error) {
+	verr = publicationValidate(title, year, booktitle, chapter, city, country, conferenceName, edition, institution, isbn, issn, journal, language)
 	if verr != nil {
 		return
 	}
-	db, err := DBGet()
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -105,8 +105,8 @@ func PublicationUpdate(id int64, title string, year int64, booktitle, chapter, c
 	}
 	return
 }
-func PublicationDelete(id int64) (numRows int64, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) PublicationDelete(id int64) (numRows int64, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -127,8 +127,8 @@ func PublicationDelete(id int64) (numRows int64, err error) {
 	}
 	return
 }
-func PublicationGetAll() (publications []*Publication, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) PublicationGetAll() (publications []*Publication, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -158,9 +158,9 @@ func PublicationGetAll() (publications []*Publication, err error) {
 	}
 	return
 }
-func PublicationGetById(id int64) (publication *Publication, err error) {
+func (dbp *DBProvider) PublicationGetById(id int64) (publication *Publication, err error) {
 	publication = &Publication{}
-	db, err := DBGet()
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -177,8 +177,8 @@ func PublicationGetById(id int64) (publication *Publication, err error) {
 	}
 	return
 }
-func PublicationGetByPublicationType(publicationTypeId int64) (publications []*Publication, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) PublicationGetByPublicationType(publicationTypeId int64) (publications []*Publication, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -208,8 +208,8 @@ func PublicationGetByPublicationType(publicationTypeId int64) (publications []*P
 	}
 	return
 }
-func PublicationGetByPublisher(publisherId int64) (publications []*Publication, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) PublicationGetByPublisher(publisherId int64) (publications []*Publication, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -239,8 +239,8 @@ func PublicationGetByPublisher(publisherId int64) (publications []*Publication, 
 	}
 	return
 }
-func PublicationGetByPrimaryAuthor(authorId int64) (publications []*Publication, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) PublicationGetByPrimaryAuthor(authorId int64) (publications []*Publication, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -270,8 +270,8 @@ func PublicationGetByPrimaryAuthor(authorId int64) (publications []*Publication,
 	}
 	return
 }
-func PublicationGetByMember(memberId int64) (publications []*Publication, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) PublicationGetByMember(memberId int64) (publications []*Publication, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -301,8 +301,8 @@ func PublicationGetByMember(memberId int64) (publications []*Publication, err er
 	}
 	return
 }
-func PublicationGetByResearchLine(researchLineId int64) (publications []*Publication, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) PublicationGetByResearchLine(researchLineId int64) (publications []*Publication, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -333,8 +333,8 @@ func PublicationGetByResearchLine(researchLineId int64) (publications []*Publica
 	return
 }
 
-func PublicationCount() (count int64, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) PublicationCount() (count int64, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -351,8 +351,8 @@ func PublicationCount() (count int64, err error) {
 	}
 	return
 }
-func PublicationExists(id int64) (exists bool, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) PublicationExists(id int64) (exists bool, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -374,8 +374,8 @@ func PublicationExists(id int64) (exists bool, err error) {
 	exists = true
 	return
 }
-func PublicationAddMember(id, memberId int64, createdBy string) (verr *ValidationError, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) PublicationAddMember(id, memberId int64, createdBy string) (verr *ValidationError, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -403,8 +403,8 @@ func PublicationAddMember(id, memberId int64, createdBy string) (verr *Validatio
 	}
 	return
 }
-func PublicationRemoveMember(id, memberId int64) (removed bool, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) PublicationRemoveMember(id, memberId int64) (removed bool, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -429,12 +429,12 @@ func PublicationRemoveMember(id, memberId int64) (removed bool, err error) {
 	return
 }
 
-func PublicationGetMembers(id int64) (members []*Member, err error) {
-	members, err = MemberGetByPublication(id)
+func (dbp *DBProvider) PublicationGetMembers(id int64) (members []*Member, err error) {
+	members, err = dbp.MemberGetByPublication(id)
 	return
 }
-func PublicationAddResearchLine(id, researchLineId int64, createdBy string) (verr *ValidationError, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) PublicationAddResearchLine(id, researchLineId int64, createdBy string) (verr *ValidationError, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -462,8 +462,8 @@ func PublicationAddResearchLine(id, researchLineId int64, createdBy string) (ver
 	}
 	return
 }
-func PublicationRemoveResearchLine(id, researchLineId int64) (removed bool, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) PublicationRemoveResearchLine(id, researchLineId int64) (removed bool, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -488,11 +488,11 @@ func PublicationRemoveResearchLine(id, researchLineId int64) (removed bool, err 
 	return
 }
 
-func PublicationGetResearchLines(id int64) (researchLines []*ResearchLine, err error) {
-	researchLines, err = ResearchLineGetByPublication(id)
+func (dbp *DBProvider) PublicationGetResearchLines(id int64) (researchLines []*ResearchLine, err error) {
+	researchLines, err = dbp.ResearchLineGetByPublication(id)
 	return
 }
-func PublicationGetColumns() []string {
+func (dbp *DBProvider) PublicationGetColumns() []string {
 	columns := []string{
 		"id",
 		"title",
@@ -506,87 +506,87 @@ func PublicationGetColumns() []string {
 	}
 	return columns
 }
-func PublicationValidateTitle(title string) (verr *ValidationError) {
-	if verr = ValidateNotEmpty("title", title); verr != nil {
+func publicationValidateTitle(title string) (verr *ValidationError) {
+	if verr = validateNotEmpty("title", title); verr != nil {
 		return verr
 	}
-	return ValidateLength("title", title, 200)
+	return validateLength("title", title, 200)
 }
-func PublicationValidateYear(year int64) (err *ValidationError) {
-	return ValidateIsNumber("year", year)
+func publicationValidateYear(year int64) (err *ValidationError) {
+	return validateIsNumber("year", year)
 }
-func PublicationValidateBooktitle(booktitle string) (verr *ValidationError) {
-	return ValidateLength("booktitle", booktitle, 200)
+func publicationValidateBooktitle(booktitle string) (verr *ValidationError) {
+	return validateLength("booktitle", booktitle, 200)
 }
-func PublicationValidateChapter(chapter string) (verr *ValidationError) {
-	return ValidateLength("chapter", chapter, 200)
+func publicationValidateChapter(chapter string) (verr *ValidationError) {
+	return validateLength("chapter", chapter, 200)
 }
-func PublicationValidateCity(city string) (verr *ValidationError) {
-	return ValidateLength("city", city, 200)
+func publicationValidateCity(city string) (verr *ValidationError) {
+	return validateLength("city", city, 200)
 }
-func PublicationValidateCountry(country string) (verr *ValidationError) {
-	return ValidateLength("country", country, 200)
+func publicationValidateCountry(country string) (verr *ValidationError) {
+	return validateLength("country", country, 200)
 }
-func PublicationValidateConferenceName(conferenceName string) (verr *ValidationError) {
-	return ValidateLength("conference_name", conferenceName, 200)
+func publicationValidateConferenceName(conferenceName string) (verr *ValidationError) {
+	return validateLength("conference_name", conferenceName, 200)
 }
-func PublicationValidateEdition(edition string) (verr *ValidationError) {
-	return ValidateLength("edition", edition, 200)
+func publicationValidateEdition(edition string) (verr *ValidationError) {
+	return validateLength("edition", edition, 200)
 }
-func PublicationValidateInstitution(institution string) (verr *ValidationError) {
-	return ValidateLength("institution", institution, 200)
+func publicationValidateInstitution(institution string) (verr *ValidationError) {
+	return validateLength("institution", institution, 200)
 }
-func PublicationValidateISBN(isbn string) (verr *ValidationError) {
-	return ValidateLength("isbn", isbn, 200)
+func publicationValidateISBN(isbn string) (verr *ValidationError) {
+	return validateLength("isbn", isbn, 200)
 }
-func PublicationValidateISSN(issn string) (verr *ValidationError) {
-	return ValidateLength("issn", issn, 200)
+func publicationValidateISSN(issn string) (verr *ValidationError) {
+	return validateLength("issn", issn, 200)
 }
-func PublicationValidateJournal(journal string) (verr *ValidationError) {
-	return ValidateLength("journal", journal, 200)
+func publicationValidateJournal(journal string) (verr *ValidationError) {
+	return validateLength("journal", journal, 200)
 }
-func PublicationValidateLanguage(language string) (verr *ValidationError) {
-	return ValidateLength("language", language, 200)
+func publicationValidateLanguage(language string) (verr *ValidationError) {
+	return validateLength("language", language, 200)
 }
 
-func PublicationValidate(title string, year int64, booktitle, chapter, city, country, conferenceName, edition, institution, isbn, issn, journal, language string) (verr *ValidationError) {
-	if verr = PublicationValidateTitle(title); verr != nil {
+func publicationValidate(title string, year int64, booktitle, chapter, city, country, conferenceName, edition, institution, isbn, issn, journal, language string) (verr *ValidationError) {
+	if verr = publicationValidateTitle(title); verr != nil {
 		return verr
 	}
-	if verr = PublicationValidateYear(year); verr != nil {
+	if verr = publicationValidateYear(year); verr != nil {
 		return verr
 	}
-	if verr = PublicationValidateBooktitle(booktitle); verr != nil {
+	if verr = publicationValidateBooktitle(booktitle); verr != nil {
 		return verr
 	}
-	if verr = PublicationValidateChapter(chapter); verr != nil {
+	if verr = publicationValidateChapter(chapter); verr != nil {
 		return verr
 	}
-	if verr = PublicationValidateCity(city); verr != nil {
+	if verr = publicationValidateCity(city); verr != nil {
 		return verr
 	}
-	if verr = PublicationValidateCountry(country); verr != nil {
+	if verr = publicationValidateCountry(country); verr != nil {
 		return verr
 	}
-	if verr = PublicationValidateConferenceName(conferenceName); verr != nil {
+	if verr = publicationValidateConferenceName(conferenceName); verr != nil {
 		return verr
 	}
-	if verr = PublicationValidateEdition(edition); verr != nil {
+	if verr = publicationValidateEdition(edition); verr != nil {
 		return verr
 	}
-	if verr = PublicationValidateInstitution(institution); verr != nil {
+	if verr = publicationValidateInstitution(institution); verr != nil {
 		return verr
 	}
-	if verr = PublicationValidateISBN(isbn); verr != nil {
+	if verr = publicationValidateISBN(isbn); verr != nil {
 		return verr
 	}
-	if verr = PublicationValidateISSN(issn); verr != nil {
+	if verr = publicationValidateISSN(issn); verr != nil {
 		return verr
 	}
-	if verr = PublicationValidateJournal(journal); verr != nil {
+	if verr = publicationValidateJournal(journal); verr != nil {
 		return verr
 	}
-	if verr = PublicationValidateLanguage(language); verr != nil {
+	if verr = publicationValidateLanguage(language); verr != nil {
 		return verr
 	}
 	return nil

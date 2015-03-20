@@ -1,4 +1,4 @@
-package instanto_lib_db
+package instantolib
 
 import (
 	"time"
@@ -15,12 +15,12 @@ type Publisher struct {
 	UpdatedAt int64  `json:"updated_at"`
 }
 
-func PublisherCreate(name, createdBy string) (id int64, verr *ValidationError, err error) {
-	verr = PublisherValidate(name)
+func (dbp *DBProvider) PublisherCreate(name, createdBy string) (id int64, verr *ValidationError, err error) {
+	verr = publisherValidate(name)
 	if verr != nil {
 		return
 	}
-	db, err := DBGet()
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -47,12 +47,12 @@ func PublisherCreate(name, createdBy string) (id int64, verr *ValidationError, e
 	}
 	return
 }
-func PublisherUpdate(id int64, name, updatedBy string) (numRows int64, verr *ValidationError, err error) {
-	verr = PublisherValidate(name)
+func (dbp *DBProvider) PublisherUpdate(id int64, name, updatedBy string) (numRows int64, verr *ValidationError, err error) {
+	verr = publisherValidate(name)
 	if verr != nil {
 		return
 	}
-	db, err := DBGet()
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -79,8 +79,8 @@ func PublisherUpdate(id int64, name, updatedBy string) (numRows int64, verr *Val
 	}
 	return
 }
-func PublisherDelete(id int64) (numRows int64, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) PublisherDelete(id int64) (numRows int64, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -101,8 +101,8 @@ func PublisherDelete(id int64) (numRows int64, err error) {
 	}
 	return
 }
-func PublisherGetAll() (publishers []*Publisher, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) PublisherGetAll() (publishers []*Publisher, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -132,9 +132,9 @@ func PublisherGetAll() (publishers []*Publisher, err error) {
 	}
 	return
 }
-func PublisherGetById(id int64) (publisher *Publisher, err error) {
+func (dbp *DBProvider) PublisherGetById(id int64) (publisher *Publisher, err error) {
 	publisher = &Publisher{}
-	db, err := DBGet()
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -151,8 +151,8 @@ func PublisherGetById(id int64) (publisher *Publisher, err error) {
 	}
 	return
 }
-func PublisherCount() (count int64, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) PublisherCount() (count int64, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -169,8 +169,8 @@ func PublisherCount() (count int64, err error) {
 	}
 	return
 }
-func PublisherExists(id int64) (exists bool, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) PublisherExists(id int64) (exists bool, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -192,7 +192,7 @@ func PublisherExists(id int64) (exists bool, err error) {
 	exists = true
 	return
 }
-func PublisherGetColumns() []string {
+func (dbp *DBProvider) PublisherGetColumns() []string {
 	columns := []string{
 		"id",
 		"name",
@@ -203,15 +203,15 @@ func PublisherGetColumns() []string {
 	}
 	return columns
 }
-func PublisherValidateName(name string) (verr *ValidationError) {
-	if verr = ValidateNotEmpty("name", name); verr != nil {
+func publisherValidateName(name string) (verr *ValidationError) {
+	if verr = validateNotEmpty("name", name); verr != nil {
 		return verr
 	}
-	return ValidateLength("name", name, 200)
+	return validateLength("name", name, 200)
 }
 
-func PublisherValidate(name string) (verr *ValidationError) {
-	verr = PublisherValidateName(name)
+func publisherValidate(name string) (verr *ValidationError) {
+	verr = publisherValidateName(name)
 	if verr != nil {
 		return
 	}

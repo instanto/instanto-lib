@@ -1,4 +1,4 @@
-package instanto_lib_db
+package instantolib
 
 import (
 	_ "github.com/go-sql-driver/mysql"
@@ -10,12 +10,12 @@ type Rol struct {
 	Description string `json:"description"`
 }
 
-func RolCreate(id, displayName, description string) (verr *ValidationError, err error) {
-	verr = RolValidate(displayName, description)
+func (dbp *DBProvider) RolCreate(id, displayName, description string) (verr *ValidationError, err error) {
+	verr = rolValidate(displayName, description)
 	if verr != nil {
 		return
 	}
-	db, err := DBGet()
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -42,12 +42,12 @@ func RolCreate(id, displayName, description string) (verr *ValidationError, err 
 	}
 	return
 }
-func RolUpdate(id, displayName, description string) (numRows int64, verr *ValidationError, err error) {
-	verr = RolValidate(displayName, description)
+func (dbp *DBProvider) RolUpdate(id, displayName, description string) (numRows int64, verr *ValidationError, err error) {
+	verr = rolValidate(displayName, description)
 	if verr != nil {
 		return
 	}
-	db, err := DBGet()
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -73,8 +73,8 @@ func RolUpdate(id, displayName, description string) (numRows int64, verr *Valida
 	}
 	return
 }
-func RolDelete(id string) (numRows int64, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) RolDelete(id string) (numRows int64, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -95,8 +95,8 @@ func RolDelete(id string) (numRows int64, err error) {
 	}
 	return
 }
-func RolGetAll() (rols []*Rol, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) RolGetAll() (rols []*Rol, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -126,9 +126,9 @@ func RolGetAll() (rols []*Rol, err error) {
 	}
 	return
 }
-func RolGetById(id string) (rol *Rol, err error) {
+func (dbp *DBProvider) RolGetById(id string) (rol *Rol, err error) {
 	rol = &Rol{}
-	db, err := DBGet()
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -145,8 +145,8 @@ func RolGetById(id string) (rol *Rol, err error) {
 	}
 	return
 }
-func RolCount() (count int64, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) RolCount() (count int64, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -163,8 +163,8 @@ func RolCount() (count int64, err error) {
 	}
 	return
 }
-func RolExists(id string) (exists bool, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) RolExists(id string) (exists bool, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -186,7 +186,7 @@ func RolExists(id string) (exists bool, err error) {
 	exists = true
 	return
 }
-func RolGetColumns() []string {
+func (dbp *DBProvider) RolGetColumns() []string {
 	columns := []string{
 		"id",
 		"display_name",
@@ -194,7 +194,7 @@ func RolGetColumns() []string {
 	}
 	return columns
 }
-func RolValidateDisplayName(displayName string) (verr *ValidationError) {
+func rolValidateDisplayName(displayName string) (verr *ValidationError) {
 	if len(displayName) == 0 {
 		verr = &ValidationError{"display_name", "cannot be empty"}
 		return
@@ -205,7 +205,7 @@ func RolValidateDisplayName(displayName string) (verr *ValidationError) {
 	}
 	return
 }
-func RolValidateDescription(description string) (verr *ValidationError) {
+func rolValidateDescription(description string) (verr *ValidationError) {
 	if len(description) == 0 {
 		verr = &ValidationError{"description", "cannot be empty"}
 		return
@@ -216,12 +216,12 @@ func RolValidateDescription(description string) (verr *ValidationError) {
 	}
 	return
 }
-func RolValidate(displayName, description string) (verr *ValidationError) {
-	verr = RolValidateDisplayName(displayName)
+func rolValidate(displayName, description string) (verr *ValidationError) {
+	verr = rolValidateDisplayName(displayName)
 	if verr != nil {
 		return
 	}
-	verr = RolValidateDescription(description)
+	verr = rolValidateDescription(description)
 	if verr != nil {
 		return
 	}

@@ -1,4 +1,4 @@
-package instanto_lib_db
+package instantolib
 
 import (
 	"database/sql"
@@ -16,8 +16,8 @@ type User struct {
 	UGroup      string `json:"ugroup"`
 }
 
-func UserCreate(username, email, password string, enabled bool, displayName, ugroup string) (ok bool, verr *ValidationError, err error) {
-	verr = UserValidate(username, email, password, displayName)
+func (dbp *DBProvider) UserCreate(username, email, password string, enabled bool, displayName, ugroup string) (ok bool, verr *ValidationError, err error) {
+	verr = userValidate(username, email, password, displayName)
 	if verr != nil {
 		return
 	}
@@ -25,7 +25,7 @@ func UserCreate(username, email, password string, enabled bool, displayName, ugr
 	if err != nil {
 		return
 	}
-	db, err := DBGet()
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -54,9 +54,9 @@ func UserCreate(username, email, password string, enabled bool, displayName, ugr
 	return
 }
 
-func UserGetByUsername(username string) (user *User, err error) {
+func (dbp *DBProvider) UserGetByUsername(username string) (user *User, err error) {
 	user = &User{}
-	db, err := DBGet()
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -73,8 +73,8 @@ func UserGetByUsername(username string) (user *User, err error) {
 	}
 	return
 }
-func UserCheckLogin(username, password string) (verr *ValidationError, err error) {
-	user, err := UserGetByUsername(username)
+func (dbp *DBProvider) UserCheckLogin(username, password string) (verr *ValidationError, err error) {
+	user, err := dbp.UserGetByUsername(username)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			err = nil
@@ -91,36 +91,36 @@ func UserCheckLogin(username, password string) (verr *ValidationError, err error
 	return
 }
 
-func UserValidateUsername(username string) (verr *ValidationError) {
+func userValidateUsername(username string) (verr *ValidationError) {
 	// check is unique
 	return
 }
-func UserValidateEmail(email string) (verr *ValidationError) {
+func userValidateEmail(email string) (verr *ValidationError) {
 	// check is unique
 	return
 }
-func UserValidatePassword(password string) (verr *ValidationError) {
+func userValidatePassword(password string) (verr *ValidationError) {
 	// check string lenght limit
 	return
 }
-func UserValidateDisplayName(dislpayName string) (verr *ValidationError) {
+func userValidateDisplayName(dislpayName string) (verr *ValidationError) {
 	// check string lenght limit
 	return
 }
-func UserValidate(username, email, password, displayName string) (verr *ValidationError) {
-	verr = UserValidateUsername(username)
+func userValidate(username, email, password, displayName string) (verr *ValidationError) {
+	verr = userValidateUsername(username)
 	if verr != nil {
 		return
 	}
-	verr = UserValidateEmail(email)
+	verr = userValidateEmail(email)
 	if verr != nil {
 		return
 	}
-	verr = UserValidatePassword(password)
+	verr = userValidatePassword(password)
 	if verr != nil {
 		return
 	}
-	verr = UserValidateDisplayName(displayName)
+	verr = userValidateDisplayName(displayName)
 	if verr != nil {
 		return
 	}

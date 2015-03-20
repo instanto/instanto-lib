@@ -1,4 +1,4 @@
-package instanto_lib_db
+package instantolib
 
 import (
 	"time"
@@ -15,12 +15,12 @@ type PublicationType struct {
 	UpdatedAt int64  `json:"updated_at"`
 }
 
-func PublicationTypeCreate(name, createdBy string) (id int64, verr *ValidationError, err error) {
-	verr = PublicationTypeValidate(name)
+func (dbp *DBProvider) PublicationTypeCreate(name, createdBy string) (id int64, verr *ValidationError, err error) {
+	verr = publicationTypeValidate(name)
 	if verr != nil {
 		return
 	}
-	db, err := DBGet()
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -47,12 +47,12 @@ func PublicationTypeCreate(name, createdBy string) (id int64, verr *ValidationEr
 	}
 	return
 }
-func PublicationTypeUpdate(id int64, name, updatedBy string) (numRows int64, verr *ValidationError, err error) {
-	verr = PublicationTypeValidate(name)
+func (dbp *DBProvider) PublicationTypeUpdate(id int64, name, updatedBy string) (numRows int64, verr *ValidationError, err error) {
+	verr = publicationTypeValidate(name)
 	if verr != nil {
 		return
 	}
-	db, err := DBGet()
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -79,8 +79,8 @@ func PublicationTypeUpdate(id int64, name, updatedBy string) (numRows int64, ver
 	}
 	return
 }
-func PublicationTypeDelete(id int64) (numRows int64, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) PublicationTypeDelete(id int64) (numRows int64, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -101,8 +101,8 @@ func PublicationTypeDelete(id int64) (numRows int64, err error) {
 	}
 	return
 }
-func PublicationTypeGetAll() (publicationTypes []*PublicationType, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) PublicationTypeGetAll() (publicationTypes []*PublicationType, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -132,9 +132,9 @@ func PublicationTypeGetAll() (publicationTypes []*PublicationType, err error) {
 	}
 	return
 }
-func PublicationTypeGetById(id int64) (publicationType *PublicationType, err error) {
+func (dbp *DBProvider) PublicationTypeGetById(id int64) (publicationType *PublicationType, err error) {
 	publicationType = &PublicationType{}
-	db, err := DBGet()
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -151,8 +151,8 @@ func PublicationTypeGetById(id int64) (publicationType *PublicationType, err err
 	}
 	return
 }
-func PublicationTypeCount() (count int64, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) PublicationTypeCount() (count int64, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -169,8 +169,8 @@ func PublicationTypeCount() (count int64, err error) {
 	}
 	return
 }
-func PublicationTypeExists(id int64) (exists bool, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) PublicationTypeExists(id int64) (exists bool, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -192,7 +192,7 @@ func PublicationTypeExists(id int64) (exists bool, err error) {
 	exists = true
 	return
 }
-func PublicationTypeGetColumns() []string {
+func (dbp *DBProvider) PublicationTypeGetColumns() []string {
 	columns := []string{
 		"id",
 		"name",
@@ -203,15 +203,15 @@ func PublicationTypeGetColumns() []string {
 	}
 	return columns
 }
-func PublicationTypeValidateName(name string) (verr *ValidationError) {
-	if verr = ValidateNotEmpty("name", name); verr != nil {
+func publicationTypeValidateName(name string) (verr *ValidationError) {
+	if verr = validateNotEmpty("name", name); verr != nil {
 		return verr
 	}
-	return ValidateLength("name", name, 200)
+	return validateLength("name", name, 200)
 }
 
-func PublicationTypeValidate(name string) (verr *ValidationError) {
-	verr = PublicationTypeValidateName(name)
+func publicationTypeValidate(name string) (verr *ValidationError) {
+	verr = publicationTypeValidateName(name)
 	if verr != nil {
 		return
 	}

@@ -1,4 +1,4 @@
-package instanto_lib_db
+package instantolib
 
 import (
 	"time"
@@ -18,12 +18,12 @@ type Status struct {
 	RelMemberCreatedAt string `json:"member_created_at,omitempty"`
 }
 
-func StatusCreate(name, description, createdBy string) (id int64, verr *ValidationError, err error) {
-	verr = StatusValidate(name, description)
+func (dbp *DBProvider) StatusCreate(name, description, createdBy string) (id int64, verr *ValidationError, err error) {
+	verr = statusValidate(name, description)
 	if verr != nil {
 		return
 	}
-	db, err := DBGet()
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -50,12 +50,12 @@ func StatusCreate(name, description, createdBy string) (id int64, verr *Validati
 	}
 	return
 }
-func StatusUpdate(id int64, name, description, updatedBy string) (numRows int64, verr *ValidationError, err error) {
-	verr = StatusValidate(name, description)
+func (dbp *DBProvider) StatusUpdate(id int64, name, description, updatedBy string) (numRows int64, verr *ValidationError, err error) {
+	verr = statusValidate(name, description)
 	if verr != nil {
 		return
 	}
-	db, err := DBGet()
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -82,8 +82,8 @@ func StatusUpdate(id int64, name, description, updatedBy string) (numRows int64,
 	}
 	return
 }
-func StatusDelete(id int64) (numRows int64, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) StatusDelete(id int64) (numRows int64, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -104,8 +104,8 @@ func StatusDelete(id int64) (numRows int64, err error) {
 	}
 	return
 }
-func StatusGetAll() (statuss []*Status, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) StatusGetAll() (statuss []*Status, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -135,9 +135,9 @@ func StatusGetAll() (statuss []*Status, err error) {
 	}
 	return
 }
-func StatusGetById(id int64) (status *Status, err error) {
+func (dbp *DBProvider) StatusGetById(id int64) (status *Status, err error) {
 	status = &Status{}
-	db, err := DBGet()
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -154,8 +154,8 @@ func StatusGetById(id int64) (status *Status, err error) {
 	}
 	return
 }
-func StatusGetByMember(memberId int64) (statuses []*Status, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) StatusGetByMember(memberId int64) (statuses []*Status, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -185,8 +185,8 @@ func StatusGetByMember(memberId int64) (statuses []*Status, err error) {
 	}
 	return
 }
-func StatusCount() (count int64, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) StatusCount() (count int64, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -203,8 +203,8 @@ func StatusCount() (count int64, err error) {
 	}
 	return
 }
-func StatusExists(id int64) (exists bool, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) StatusExists(id int64) (exists bool, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -226,8 +226,8 @@ func StatusExists(id int64) (exists bool, err error) {
 	exists = true
 	return
 }
-func StatusAddMember(id, memberId int64, createdBy string) (verr *ValidationError, err error) {
-	member, err := MemberGetById(memberId)
+func (dbp *DBProvider) StatusAddMember(id, memberId int64, createdBy string) (verr *ValidationError, err error) {
+	member, err := dbp.MemberGetById(memberId)
 	if err != nil {
 		return
 	}
@@ -235,7 +235,7 @@ func StatusAddMember(id, memberId int64, createdBy string) (verr *ValidationErro
 		verr = &ValidationError{"member", "this member has this status as primary"}
 		return
 	}
-	db, err := DBGet()
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -263,8 +263,8 @@ func StatusAddMember(id, memberId int64, createdBy string) (verr *ValidationErro
 	}
 	return
 }
-func StatusRemoveMember(id, memberId int64) (removed bool, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) StatusRemoveMember(id, memberId int64) (removed bool, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -290,11 +290,11 @@ func StatusRemoveMember(id, memberId int64) (removed bool, err error) {
 	return
 }
 
-func StatusGetMembers(id int64) (members []*Member, err error) {
-	members, err = MemberGetByStatus(id)
+func (dbp *DBProvider) StatusGetMembers(id int64) (members []*Member, err error) {
+	members, err = dbp.MemberGetByStatus(id)
 	return
 }
-func StatusGetColumns() []string {
+func (dbp *DBProvider) StatusGetColumns() []string {
 	columns := []string{
 		"id",
 		"name",
@@ -306,21 +306,21 @@ func StatusGetColumns() []string {
 	}
 	return columns
 }
-func StatusValidateName(name string) (verr *ValidationError) {
-	if verr = ValidateNotEmpty("name", name); verr != nil {
+func statusValidateName(name string) (verr *ValidationError) {
+	if verr = validateNotEmpty("name", name); verr != nil {
 		return verr
 	}
-	return ValidateLength("name", name, 200)
+	return validateLength("name", name, 200)
 }
-func StatusValidateDescription(description string) (verr *ValidationError) {
-	return ValidateLength("description", description, 200)
+func statusValidateDescription(description string) (verr *ValidationError) {
+	return validateLength("description", description, 200)
 }
-func StatusValidate(name, description string) (verr *ValidationError) {
-	verr = StatusValidateName(name)
+func statusValidate(name, description string) (verr *ValidationError) {
+	verr = statusValidateName(name)
 	if verr != nil {
 		return
 	}
-	verr = StatusValidateDescription(description)
+	verr = statusValidateDescription(description)
 	if verr != nil {
 		return
 	}

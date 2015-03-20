@@ -1,4 +1,4 @@
-package instanto_lib_db
+package instantolib
 
 import (
 	"time"
@@ -33,12 +33,12 @@ type FinancedProject struct {
 	RelResearchLineCreatedAt   int64  `json:"research_line_created_at,omitempty"`
 }
 
-func FinancedProjectCreate(title string, started, ended, budget int64, scope string, createdBy string, primaryFundingBody int64, primaryRecord string, primaryLeader int64) (id int64, verr *ValidationError, err error) {
-	verr = FinancedProjectValidate(title, started, ended, budget, scope)
+func (dbp *DBProvider) FinancedProjectCreate(title string, started, ended, budget int64, scope string, createdBy string, primaryFundingBody int64, primaryRecord string, primaryLeader int64) (id int64, verr *ValidationError, err error) {
+	verr = financedProjectValidate(title, started, ended, budget, scope)
 	if verr != nil {
 		return
 	}
-	db, err := DBGet()
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -65,12 +65,12 @@ func FinancedProjectCreate(title string, started, ended, budget int64, scope str
 	}
 	return
 }
-func FinancedProjectUpdate(id int64, title string, started, ended, budget int64, scope string, updatedBy string, primaryFundingBody int64, primaryRecord string, primaryLeader int64) (numRows int64, verr *ValidationError, err error) {
-	verr = FinancedProjectValidate(title, started, ended, budget, scope)
+func (dbp *DBProvider) FinancedProjectUpdate(id int64, title string, started, ended, budget int64, scope string, updatedBy string, primaryFundingBody int64, primaryRecord string, primaryLeader int64) (numRows int64, verr *ValidationError, err error) {
+	verr = financedProjectValidate(title, started, ended, budget, scope)
 	if verr != nil {
 		return
 	}
-	db, err := DBGet()
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -97,8 +97,8 @@ func FinancedProjectUpdate(id int64, title string, started, ended, budget int64,
 	}
 	return
 }
-func FinancedProjectDelete(id int64) (numRows int64, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) FinancedProjectDelete(id int64) (numRows int64, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -119,8 +119,8 @@ func FinancedProjectDelete(id int64) (numRows int64, err error) {
 	}
 	return
 }
-func FinancedProjectGetAll() (financedProjects []*FinancedProject, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) FinancedProjectGetAll() (financedProjects []*FinancedProject, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -150,9 +150,9 @@ func FinancedProjectGetAll() (financedProjects []*FinancedProject, err error) {
 	}
 	return
 }
-func FinancedProjectGetById(id int64) (financedProject *FinancedProject, err error) {
+func (dbp *DBProvider) FinancedProjectGetById(id int64) (financedProject *FinancedProject, err error) {
 	financedProject = &FinancedProject{}
-	db, err := DBGet()
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -169,8 +169,8 @@ func FinancedProjectGetById(id int64) (financedProject *FinancedProject, err err
 	}
 	return
 }
-func FinancedProjectGetByPrimaryFundingBody(fundingBodyId int64) (financedProjects []*FinancedProject, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) FinancedProjectGetByPrimaryFundingBody(fundingBodyId int64) (financedProjects []*FinancedProject, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -200,8 +200,8 @@ func FinancedProjectGetByPrimaryFundingBody(fundingBodyId int64) (financedProjec
 	}
 	return
 }
-func FinancedProjectGetByPrimaryLeader(leaderId int64) (financedProjects []*FinancedProject, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) FinancedProjectGetByPrimaryLeader(leaderId int64) (financedProjects []*FinancedProject, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -231,8 +231,8 @@ func FinancedProjectGetByPrimaryLeader(leaderId int64) (financedProjects []*Fina
 	}
 	return
 }
-func FinancedProjectGetByFundingBody(fundingBodyId int64) (financedProjects []*FinancedProject, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) FinancedProjectGetByFundingBody(fundingBodyId int64) (financedProjects []*FinancedProject, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -262,8 +262,8 @@ func FinancedProjectGetByFundingBody(fundingBodyId int64) (financedProjects []*F
 	}
 	return
 }
-func FinancedProjectGetByLeader(leaderId int64) (financedProjects []*FinancedProject, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) FinancedProjectGetByLeader(leaderId int64) (financedProjects []*FinancedProject, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -293,8 +293,8 @@ func FinancedProjectGetByLeader(leaderId int64) (financedProjects []*FinancedPro
 	}
 	return
 }
-func FinancedProjectGetByMember(memberId int64) (financedProjects []*FinancedProject, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) FinancedProjectGetByMember(memberId int64) (financedProjects []*FinancedProject, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -324,8 +324,8 @@ func FinancedProjectGetByMember(memberId int64) (financedProjects []*FinancedPro
 	}
 	return
 }
-func FinancedProjectGetByResearchLine(researchLineId int64) (financedProjects []*FinancedProject, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) FinancedProjectGetByResearchLine(researchLineId int64) (financedProjects []*FinancedProject, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -355,8 +355,8 @@ func FinancedProjectGetByResearchLine(researchLineId int64) (financedProjects []
 	}
 	return
 }
-func FinancedProjectCount() (count int64, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) FinancedProjectCount() (count int64, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -373,8 +373,8 @@ func FinancedProjectCount() (count int64, err error) {
 	}
 	return
 }
-func FinancedProjectExists(id int64) (exists bool, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) FinancedProjectExists(id int64) (exists bool, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -397,12 +397,12 @@ func FinancedProjectExists(id int64) (exists bool, err error) {
 	return
 }
 
-func FinancedProjectAddFundingBody(id, fundingBodyId int64, record, createdBy string) (verr *ValidationError, err error) {
-	verr = FinancedProjectValidateRecord(record)
+func (dbp *DBProvider) FinancedProjectAddFundingBody(id, fundingBodyId int64, record, createdBy string) (verr *ValidationError, err error) {
+	verr = financedProjectValidateRecord(record)
 	if verr != nil {
 		return
 	}
-	financedProject, err := FinancedProjectGetById(id)
+	financedProject, err := dbp.FinancedProjectGetById(id)
 	if err != nil {
 		return
 	}
@@ -410,7 +410,7 @@ func FinancedProjectAddFundingBody(id, fundingBodyId int64, record, createdBy st
 		verr = &ValidationError{"funding_body", "this funding body is already the primary"}
 		return
 	}
-	db, err := DBGet()
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -438,8 +438,8 @@ func FinancedProjectAddFundingBody(id, fundingBodyId int64, record, createdBy st
 	}
 	return
 }
-func FinancedProjectRemoveFundingBody(id, fundingBodyId int64) (removed bool, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) FinancedProjectRemoveFundingBody(id, fundingBodyId int64) (removed bool, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -464,12 +464,12 @@ func FinancedProjectRemoveFundingBody(id, fundingBodyId int64) (removed bool, er
 	return
 }
 
-func FinancedProjectGetFundingBodies(id int64) (fundingBodies []*FundingBody, err error) {
-	fundingBodies, err = FundingBodyGetByFinancedProject(id)
+func (dbp *DBProvider) FinancedProjectGetFundingBodies(id int64) (fundingBodies []*FundingBody, err error) {
+	fundingBodies, err = dbp.FundingBodyGetByFinancedProject(id)
 	return
 }
-func FinancedProjectAddLeader(id, leaderId int64, createdBy string) (verr *ValidationError, err error) {
-	financedProject, err := FinancedProjectGetById(id)
+func (dbp *DBProvider) FinancedProjectAddLeader(id, leaderId int64, createdBy string) (verr *ValidationError, err error) {
+	financedProject, err := dbp.FinancedProjectGetById(id)
 	if err != nil {
 		return
 	}
@@ -477,7 +477,7 @@ func FinancedProjectAddLeader(id, leaderId int64, createdBy string) (verr *Valid
 		verr = &ValidationError{"leader", "this leader is already the primary"}
 		return
 	}
-	db, err := DBGet()
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -505,8 +505,8 @@ func FinancedProjectAddLeader(id, leaderId int64, createdBy string) (verr *Valid
 	}
 	return
 }
-func FinancedProjectRemoveLeader(id, leaderId int64) (removed bool, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) FinancedProjectRemoveLeader(id, leaderId int64) (removed bool, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -531,13 +531,13 @@ func FinancedProjectRemoveLeader(id, leaderId int64) (removed bool, err error) {
 	return
 }
 
-func FinancedProjectGetLeaders(id int64) (leaders []*Member, err error) {
-	leaders, err = MemberGetByFinancedProjectAsLeader(id)
+func (dbp *DBProvider) FinancedProjectGetLeaders(id int64) (leaders []*Member, err error) {
+	leaders, err = dbp.MemberGetByFinancedProjectAsLeader(id)
 	return
 }
 
-func FinancedProjectAddMember(id, memberId int64, createdBy string) (verr *ValidationError, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) FinancedProjectAddMember(id, memberId int64, createdBy string) (verr *ValidationError, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -565,8 +565,8 @@ func FinancedProjectAddMember(id, memberId int64, createdBy string) (verr *Valid
 	}
 	return
 }
-func FinancedProjectRemoveMember(id, memberId int64) (removed bool, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) FinancedProjectRemoveMember(id, memberId int64) (removed bool, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -591,12 +591,12 @@ func FinancedProjectRemoveMember(id, memberId int64) (removed bool, err error) {
 	return
 }
 
-func FinancedProjectGetMembers(id int64) (members []*Member, err error) {
-	members, err = MemberGetByFinancedProject(id)
+func (dbp *DBProvider) FinancedProjectGetMembers(id int64) (members []*Member, err error) {
+	members, err = dbp.MemberGetByFinancedProject(id)
 	return
 }
-func FinancedProjectAddResearchLine(id, researchLineId int64, createdBy string) (verr *ValidationError, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) FinancedProjectAddResearchLine(id, researchLineId int64, createdBy string) (verr *ValidationError, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -624,8 +624,8 @@ func FinancedProjectAddResearchLine(id, researchLineId int64, createdBy string) 
 	}
 	return
 }
-func FinancedProjectRemoveResearchLine(id, researchLineId int64) (removed bool, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) FinancedProjectRemoveResearchLine(id, researchLineId int64) (removed bool, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -650,11 +650,11 @@ func FinancedProjectRemoveResearchLine(id, researchLineId int64) (removed bool, 
 	return
 }
 
-func FinancedProjectGetResearchLines(id int64) (researchLines []*ResearchLine, err error) {
-	researchLines, err = ResearchLineGetByFinancedProject(id)
+func (dbp *DBProvider) FinancedProjectGetResearchLines(id int64) (researchLines []*ResearchLine, err error) {
+	researchLines, err = dbp.ResearchLineGetByFinancedProject(id)
 	return
 }
-func FinancedProjectGetColumns() []string {
+func (dbp *DBProvider) FinancedProjectGetColumns() []string {
 	columns := []string{
 		"id",
 		"title",
@@ -672,41 +672,41 @@ func FinancedProjectGetColumns() []string {
 	}
 	return columns
 }
-func FinancedProjectValidateTitle(title string) (verr *ValidationError) {
-	if verr = ValidateNotEmpty("title", title); verr != nil {
+func financedProjectValidateTitle(title string) (verr *ValidationError) {
+	if verr = validateNotEmpty("title", title); verr != nil {
 		return verr
 	}
-	return ValidateLength("title", title, 200)
+	return validateLength("title", title, 200)
 }
-func FinancedProjectValidateStartedAndEnded(started, ended int64) (verr *ValidationError) {
-	if verr = ValidateIsNumber("started", started); verr != nil {
+func financedProjectValidateStartedAndEnded(started, ended int64) (verr *ValidationError) {
+	if verr = validateIsNumber("started", started); verr != nil {
 		return verr
 	}
 	return nil
 }
-func FinancedProjectValidateBudget(budget int64) (verr *ValidationError) {
-	return ValidateIsNumber("budget", budget)
+func financedProjectValidateBudget(budget int64) (verr *ValidationError) {
+	return validateIsNumber("budget", budget)
 }
-func FinancedProjectValidateScope(scope string) (verr *ValidationError) {
-	return ValidateScope("scope", scope)
+func financedProjectValidateScope(scope string) (verr *ValidationError) {
+	return validateScope("scope", scope)
 }
-func FinancedProjectValidateRecord(record string) (err *ValidationError) {
-	return ValidateLength("record", record, 200)
+func financedProjectValidateRecord(record string) (err *ValidationError) {
+	return validateLength("record", record, 200)
 }
-func FinancedProjectValidate(title string, started, ended, budget int64, scope string) (verr *ValidationError) {
-	verr = FinancedProjectValidateTitle(title)
+func financedProjectValidate(title string, started, ended, budget int64, scope string) (verr *ValidationError) {
+	verr = financedProjectValidateTitle(title)
 	if verr != nil {
 		return
 	}
-	verr = FinancedProjectValidateStartedAndEnded(started, ended)
+	verr = financedProjectValidateStartedAndEnded(started, ended)
 	if verr != nil {
 		return
 	}
-	verr = FinancedProjectValidateBudget(budget)
+	verr = financedProjectValidateBudget(budget)
 	if verr != nil {
 		return
 	}
-	verr = FinancedProjectValidateScope(scope)
+	verr = financedProjectValidateScope(scope)
 	if verr != nil {
 		return
 	}

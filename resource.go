@@ -1,4 +1,4 @@
-package instanto_lib_db
+package instantolib
 
 type Resource struct {
 	FileNameHash int64  `json:"filename_hash"`

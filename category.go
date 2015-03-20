@@ -1,4 +1,4 @@
-package instanto_lib_db
+package instantolib
 
 import (
 	_ "github.com/go-sql-driver/mysql"
@@ -15,12 +15,12 @@ type Category struct {
 	UpdatedAt   int64  `json:"updated_at"`
 }
 
-func CategoryCreate(name, description, createdBy string) (id int64, verr *ValidationError, err error) {
-	verr = CategoryValidate(name, description)
+func (dbp *DBProvider) CategoryCreate(name, description, createdBy string) (id int64, verr *ValidationError, err error) {
+	verr = categoryValidate(name, description)
 	if verr != nil {
 		return
 	}
-	db, err := DBGet()
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -47,12 +47,12 @@ func CategoryCreate(name, description, createdBy string) (id int64, verr *Valida
 	}
 	return
 }
-func CategoryUpdate(id int64, name, description, updatedBy string) (numRows int64, verr *ValidationError, err error) {
-	verr = CategoryValidate(name, description)
+func (dbp *DBProvider) CategoryUpdate(id int64, name, description, updatedBy string) (numRows int64, verr *ValidationError, err error) {
+	verr = categoryValidate(name, description)
 	if verr != nil {
 		return
 	}
-	db, err := DBGet()
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -79,8 +79,8 @@ func CategoryUpdate(id int64, name, description, updatedBy string) (numRows int6
 	}
 	return
 }
-func CategoryDelete(id int64) (numRows int64, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) CategoryDelete(id int64) (numRows int64, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -101,8 +101,8 @@ func CategoryDelete(id int64) (numRows int64, err error) {
 	}
 	return
 }
-func CategoryGetAll() (categorys []*Category, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) CategoryGetAll() (categorys []*Category, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -132,9 +132,9 @@ func CategoryGetAll() (categorys []*Category, err error) {
 	}
 	return
 }
-func CategoryGetById(id int64) (category *Category, err error) {
+func (dbp *DBProvider) CategoryGetById(id int64) (category *Category, err error) {
 	category = &Category{}
-	db, err := DBGet()
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -151,8 +151,8 @@ func CategoryGetById(id int64) (category *Category, err error) {
 	}
 	return
 }
-func CategoryCount() (count int64, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) CategoryCount() (count int64, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -169,8 +169,8 @@ func CategoryCount() (count int64, err error) {
 	}
 	return
 }
-func CategoryExists(id int64) (exists bool, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) CategoryExists(id int64) (exists bool, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -192,7 +192,7 @@ func CategoryExists(id int64) (exists bool, err error) {
 	exists = true
 	return
 }
-func CategoryGetColumns() []string {
+func (dbp *DBProvider) CategoryGetColumns() []string {
 	columns := []string{
 		"id",
 		"name",
@@ -204,7 +204,7 @@ func CategoryGetColumns() []string {
 	}
 	return columns
 }
-func CategoryValidateName(name string) (verr *ValidationError) {
+func categoryValidateName(name string) (verr *ValidationError) {
 	if len(name) == 0 {
 		verr = &ValidationError{"name", "cannot be empty"}
 		return
@@ -215,18 +215,18 @@ func CategoryValidateName(name string) (verr *ValidationError) {
 	}
 	return
 }
-func CategoryValidateDescription(description string) (verr *ValidationError) {
+func categoryValidateDescription(description string) (verr *ValidationError) {
 	if len(description) > 45 {
 		verr = &ValidationError{"description", "length cannot be greater than 45"}
 	}
 	return
 }
-func CategoryValidate(name, description string) (verr *ValidationError) {
-	verr = CategoryValidateName(name)
+func categoryValidate(name, description string) (verr *ValidationError) {
+	verr = categoryValidateName(name)
 	if verr != nil {
 		return
 	}
-	verr = CategoryValidateDescription(description)
+	verr = categoryValidateDescription(description)
 	if verr != nil {
 		return
 	}

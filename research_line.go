@@ -1,4 +1,4 @@
-package instanto_lib_db
+package instantolib
 
 import (
 	"time"
@@ -33,12 +33,12 @@ type ResearchLine struct {
 	RelArticleCreatedAt         int64  `json:"article_created_at,omitempty"`
 }
 
-func ResearchLineCreate(title string, finished bool, description, createdBy string, primaryResearchArea int64) (id int64, verr *ValidationError, err error) {
-	verr = ResearchLineValidate(title, description)
+func (dbp *DBProvider) ResearchLineCreate(title string, finished bool, description, createdBy string, primaryResearchArea int64) (id int64, verr *ValidationError, err error) {
+	verr = researchLineValidate(title, description)
 	if verr != nil {
 		return
 	}
-	db, err := DBGet()
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -65,12 +65,12 @@ func ResearchLineCreate(title string, finished bool, description, createdBy stri
 	}
 	return
 }
-func ResearchLineUpdate(id int64, title string, finished bool, description string, updatedBy string, primaryResearchArea int64) (numRows int64, verr *ValidationError, err error) {
-	verr = ResearchLineValidate(title, description)
+func (dbp *DBProvider) ResearchLineUpdate(id int64, title string, finished bool, description string, updatedBy string, primaryResearchArea int64) (numRows int64, verr *ValidationError, err error) {
+	verr = researchLineValidate(title, description)
 	if verr != nil {
 		return
 	}
-	db, err := DBGet()
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -97,8 +97,8 @@ func ResearchLineUpdate(id int64, title string, finished bool, description strin
 	}
 	return
 }
-func ResearchLineUpdateLogo(id int64, logo string, updatedBy string) (numRows int64, verr *ValidationError, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) ResearchLineUpdateLogo(id int64, logo string, updatedBy string) (numRows int64, verr *ValidationError, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -125,8 +125,8 @@ func ResearchLineUpdateLogo(id int64, logo string, updatedBy string) (numRows in
 	}
 	return
 }
-func ResearchLineDelete(id int64) (numRows int64, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) ResearchLineDelete(id int64) (numRows int64, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -147,8 +147,8 @@ func ResearchLineDelete(id int64) (numRows int64, err error) {
 	}
 	return
 }
-func ResearchLineGetAll() (researchLines []*ResearchLine, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) ResearchLineGetAll() (researchLines []*ResearchLine, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -178,9 +178,9 @@ func ResearchLineGetAll() (researchLines []*ResearchLine, err error) {
 	}
 	return
 }
-func ResearchLineGetById(id int64) (researchLine *ResearchLine, err error) {
+func (dbp *DBProvider) ResearchLineGetById(id int64) (researchLine *ResearchLine, err error) {
 	researchLine = &ResearchLine{}
-	db, err := DBGet()
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -197,8 +197,8 @@ func ResearchLineGetById(id int64) (researchLine *ResearchLine, err error) {
 	}
 	return
 }
-func ResearchLineGetByPrimaryResearchArea(researchAreaId int64) (researchLines []*ResearchLine, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) ResearchLineGetByPrimaryResearchArea(researchAreaId int64) (researchLines []*ResearchLine, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -229,8 +229,8 @@ func ResearchLineGetByPrimaryResearchArea(researchAreaId int64) (researchLines [
 	return
 }
 
-func ResearchLineGetByResearchArea(researchAreaId int64) (researchLines []*ResearchLine, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) ResearchLineGetByResearchArea(researchAreaId int64) (researchLines []*ResearchLine, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -260,8 +260,8 @@ func ResearchLineGetByResearchArea(researchAreaId int64) (researchLines []*Resea
 	}
 	return
 }
-func ResearchLineGetByFinancedProject(financedProjectId int64) (researchLines []*ResearchLine, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) ResearchLineGetByFinancedProject(financedProjectId int64) (researchLines []*ResearchLine, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -292,8 +292,8 @@ func ResearchLineGetByFinancedProject(financedProjectId int64) (researchLines []
 	return
 }
 
-func ResearchLineGetByPublication(publicationId int64) (researchLines []*ResearchLine, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) ResearchLineGetByPublication(publicationId int64) (researchLines []*ResearchLine, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -323,8 +323,8 @@ func ResearchLineGetByPublication(publicationId int64) (researchLines []*Researc
 	}
 	return
 }
-func ResearchLineGetByStudentWork(studentWorkId int64) (researchLines []*ResearchLine, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) ResearchLineGetByStudentWork(studentWorkId int64) (researchLines []*ResearchLine, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -354,8 +354,8 @@ func ResearchLineGetByStudentWork(studentWorkId int64) (researchLines []*Researc
 	}
 	return
 }
-func ResearchLineGetByPartner(partnerId int64) (researchLines []*ResearchLine, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) ResearchLineGetByPartner(partnerId int64) (researchLines []*ResearchLine, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -385,8 +385,8 @@ func ResearchLineGetByPartner(partnerId int64) (researchLines []*ResearchLine, e
 	}
 	return
 }
-func ResearchLineGetByMember(memberId int64) (researchLines []*ResearchLine, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) ResearchLineGetByMember(memberId int64) (researchLines []*ResearchLine, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -416,8 +416,8 @@ func ResearchLineGetByMember(memberId int64) (researchLines []*ResearchLine, err
 	}
 	return
 }
-func ResearchLineGetByArticle(articleId int64) (researchLines []*ResearchLine, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) ResearchLineGetByArticle(articleId int64) (researchLines []*ResearchLine, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -448,8 +448,8 @@ func ResearchLineGetByArticle(articleId int64) (researchLines []*ResearchLine, e
 	return
 }
 
-func ResearchLineCount() (count int64, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) ResearchLineCount() (count int64, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -466,8 +466,8 @@ func ResearchLineCount() (count int64, err error) {
 	}
 	return
 }
-func ResearchLineExists(id int64) (exists bool, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) ResearchLineExists(id int64) (exists bool, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -490,8 +490,8 @@ func ResearchLineExists(id int64) (exists bool, err error) {
 	return
 }
 
-func ResearchLineAddResearchArea(id, researchAreaId int64, createdBy string) (verr *ValidationError, err error) {
-	researchLine, err := ResearchLineGetById(id)
+func (dbp *DBProvider) ResearchLineAddResearchArea(id, researchAreaId int64, createdBy string) (verr *ValidationError, err error) {
+	researchLine, err := dbp.ResearchLineGetById(id)
 	if err != nil {
 		return
 	}
@@ -499,7 +499,7 @@ func ResearchLineAddResearchArea(id, researchAreaId int64, createdBy string) (ve
 		verr = &ValidationError{"research_area", "this research area is already the primary"}
 		return
 	}
-	db, err := DBGet()
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -527,8 +527,8 @@ func ResearchLineAddResearchArea(id, researchAreaId int64, createdBy string) (ve
 	}
 	return
 }
-func ResearchLineRemoveResearchArea(id, researchAreaId int64) (removed bool, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) ResearchLineRemoveResearchArea(id, researchAreaId int64) (removed bool, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -553,13 +553,13 @@ func ResearchLineRemoveResearchArea(id, researchAreaId int64) (removed bool, err
 	return
 }
 
-func ResearchLineGetResearchAreas(id int64) (researchAreas []*ResearchArea, err error) {
-	researchAreas, err = ResearchAreaGetByResearchLine(id)
+func (dbp *DBProvider) ResearchLineGetResearchAreas(id int64) (researchAreas []*ResearchArea, err error) {
+	researchAreas, err = dbp.ResearchAreaGetByResearchLine(id)
 	return
 }
 
-func ResearchLineAddFinancedProject(id, financedProjectId int64, createdBy string) (verr *ValidationError, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) ResearchLineAddFinancedProject(id, financedProjectId int64, createdBy string) (verr *ValidationError, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -587,8 +587,8 @@ func ResearchLineAddFinancedProject(id, financedProjectId int64, createdBy strin
 	}
 	return
 }
-func ResearchLineRemoveFinancedProject(id, financedProjectId int64) (removed bool, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) ResearchLineRemoveFinancedProject(id, financedProjectId int64) (removed bool, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -613,12 +613,12 @@ func ResearchLineRemoveFinancedProject(id, financedProjectId int64) (removed boo
 	return
 }
 
-func ResearchLineGetFinancedProjects(id int64) (financedProjects []*FinancedProject, err error) {
-	financedProjects, err = FinancedProjectGetByResearchLine(id)
+func (dbp *DBProvider) ResearchLineGetFinancedProjects(id int64) (financedProjects []*FinancedProject, err error) {
+	financedProjects, err = dbp.FinancedProjectGetByResearchLine(id)
 	return
 }
-func ResearchLineAddArticle(id, articleId int64, createdBy string) (verr *ValidationError, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) ResearchLineAddArticle(id, articleId int64, createdBy string) (verr *ValidationError, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -646,8 +646,8 @@ func ResearchLineAddArticle(id, articleId int64, createdBy string) (verr *Valida
 	}
 	return
 }
-func ResearchLineRemoveArticle(id, articleId int64) (removed bool, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) ResearchLineRemoveArticle(id, articleId int64) (removed bool, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -672,12 +672,12 @@ func ResearchLineRemoveArticle(id, articleId int64) (removed bool, err error) {
 	return
 }
 
-func ResearchLineGetArticles(id int64) (articles []*Article, err error) {
-	articles, err = ArticleGetByResearchLine(id)
+func (dbp *DBProvider) ResearchLineGetArticles(id int64) (articles []*Article, err error) {
+	articles, err = dbp.ArticleGetByResearchLine(id)
 	return
 }
-func ResearchLineAddPartner(id, partnerId int64, createdBy string) (verr *ValidationError, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) ResearchLineAddPartner(id, partnerId int64, createdBy string) (verr *ValidationError, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -705,8 +705,8 @@ func ResearchLineAddPartner(id, partnerId int64, createdBy string) (verr *Valida
 	}
 	return
 }
-func ResearchLineRemovePartner(id, partnerId int64) (removed bool, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) ResearchLineRemovePartner(id, partnerId int64) (removed bool, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -731,13 +731,13 @@ func ResearchLineRemovePartner(id, partnerId int64) (removed bool, err error) {
 	return
 }
 
-func ResearchLineGetPartners(id int64) (partners []*Partner, err error) {
-	partners, err = PartnerGetByResearchLine(id)
+func (dbp *DBProvider) ResearchLineGetPartners(id int64) (partners []*Partner, err error) {
+	partners, err = dbp.PartnerGetByResearchLine(id)
 	return
 }
 
-func ResearchLineAddMember(id, memberId int64, createdBy string) (verr *ValidationError, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) ResearchLineAddMember(id, memberId int64, createdBy string) (verr *ValidationError, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -765,8 +765,8 @@ func ResearchLineAddMember(id, memberId int64, createdBy string) (verr *Validati
 	}
 	return
 }
-func ResearchLineRemoveMember(id, memberId int64) (removed bool, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) ResearchLineRemoveMember(id, memberId int64) (removed bool, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -791,13 +791,13 @@ func ResearchLineRemoveMember(id, memberId int64) (removed bool, err error) {
 	return
 }
 
-func ResearchLineGetMembers(id int64) (members []*Member, err error) {
-	members, err = MemberGetByResearchLine(id)
+func (dbp *DBProvider) ResearchLineGetMembers(id int64) (members []*Member, err error) {
+	members, err = dbp.MemberGetByResearchLine(id)
 	return
 }
 
-func ResearchLineAddPublication(id, publicationId int64, createdBy string) (verr *ValidationError, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) ResearchLineAddPublication(id, publicationId int64, createdBy string) (verr *ValidationError, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -825,8 +825,8 @@ func ResearchLineAddPublication(id, publicationId int64, createdBy string) (verr
 	}
 	return
 }
-func ResearchLineRemovePublication(id, publicationId int64) (removed bool, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) ResearchLineRemovePublication(id, publicationId int64) (removed bool, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -851,12 +851,12 @@ func ResearchLineRemovePublication(id, publicationId int64) (removed bool, err e
 	return
 }
 
-func ResearchLineGetPublications(id int64) (publications []*Publication, err error) {
-	publications, err = PublicationGetByResearchLine(id)
+func (dbp *DBProvider) ResearchLineGetPublications(id int64) (publications []*Publication, err error) {
+	publications, err = dbp.PublicationGetByResearchLine(id)
 	return
 }
-func ResearchLineAddStudentWork(id, studentWorkId int64, createdBy string) (verr *ValidationError, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) ResearchLineAddStudentWork(id, studentWorkId int64, createdBy string) (verr *ValidationError, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -884,8 +884,8 @@ func ResearchLineAddStudentWork(id, studentWorkId int64, createdBy string) (verr
 	}
 	return
 }
-func ResearchLineRemoveStudentWork(id, studentWorkId int64) (removed bool, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) ResearchLineRemoveStudentWork(id, studentWorkId int64) (removed bool, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -910,11 +910,11 @@ func ResearchLineRemoveStudentWork(id, studentWorkId int64) (removed bool, err e
 	return
 }
 
-func ResearchLineGetStudentWorks(id int64) (studentWorks []*StudentWork, err error) {
-	studentWorks, err = StudentWorkGetByResearchLine(id)
+func (dbp *DBProvider) ResearchLineGetStudentWorks(id int64) (studentWorks []*StudentWork, err error) {
+	studentWorks, err = dbp.StudentWorkGetByResearchLine(id)
 	return
 }
-func ResearchLineGetColumns() []string {
+func (dbp *DBProvider) ResearchLineGetColumns() []string {
 	columns := []string{
 		"id",
 		"title",
@@ -929,21 +929,21 @@ func ResearchLineGetColumns() []string {
 	}
 	return columns
 }
-func ResearchLineValidateTitle(title string) (verr *ValidationError) {
-	if verr = ValidateNotEmpty("title", title); verr != nil {
+func researchLineValidateTitle(title string) (verr *ValidationError) {
+	if verr = validateNotEmpty("title", title); verr != nil {
 		return verr
 	}
-	return ValidateLength("title", title, 200)
+	return validateLength("title", title, 200)
 }
-func ResearchLineValidateDescription(description string) (verr *ValidationError) {
-	return ValidateLength("description", description, 200)
+func researchLineValidateDescription(description string) (verr *ValidationError) {
+	return validateLength("description", description, 200)
 }
-func ResearchLineValidate(title, description string) (verr *ValidationError) {
-	verr = ResearchLineValidateTitle(title)
+func researchLineValidate(title, description string) (verr *ValidationError) {
+	verr = researchLineValidateTitle(title)
 	if verr != nil {
 		return
 	}
-	verr = ResearchLineValidateDescription(description)
+	verr = researchLineValidateDescription(description)
 	if verr != nil {
 		return
 	}

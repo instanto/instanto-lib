@@ -1,4 +1,4 @@
-package instanto_lib_db
+package instantolib
 
 import (
 	"time"
@@ -22,12 +22,12 @@ type StudentWork struct {
 	RelResearchLineCreatedAt int64  `json:"research_line_created_at,omitempty"`
 }
 
-func StudentWorkCreate(title string, year int64, school, volume, createdBy string, studentWorkType, author int64) (id int64, verr *ValidationError, err error) {
-	verr = StudentWorkValidate(title, year, school, volume)
+func (dbp *DBProvider) StudentWorkCreate(title string, year int64, school, volume, createdBy string, studentWorkType, author int64) (id int64, verr *ValidationError, err error) {
+	verr = studentWorkValidate(title, year, school, volume)
 	if verr != nil {
 		return
 	}
-	db, err := DBGet()
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -54,12 +54,12 @@ func StudentWorkCreate(title string, year int64, school, volume, createdBy strin
 	}
 	return
 }
-func StudentWorkUpdate(id int64, title string, year int64, school, volume, updatedBy string, studentWorkType, author int64) (numRows int64, verr *ValidationError, err error) {
-	verr = StudentWorkValidate(title, year, school, volume)
+func (dbp *DBProvider) StudentWorkUpdate(id int64, title string, year int64, school, volume, updatedBy string, studentWorkType, author int64) (numRows int64, verr *ValidationError, err error) {
+	verr = studentWorkValidate(title, year, school, volume)
 	if verr != nil {
 		return
 	}
-	db, err := DBGet()
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -86,8 +86,8 @@ func StudentWorkUpdate(id int64, title string, year int64, school, volume, updat
 	}
 	return
 }
-func StudentWorkDelete(id int64) (numRows int64, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) StudentWorkDelete(id int64) (numRows int64, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -108,8 +108,8 @@ func StudentWorkDelete(id int64) (numRows int64, err error) {
 	}
 	return
 }
-func StudentWorkGetAll() (studentWorks []*StudentWork, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) StudentWorkGetAll() (studentWorks []*StudentWork, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -139,9 +139,9 @@ func StudentWorkGetAll() (studentWorks []*StudentWork, err error) {
 	}
 	return
 }
-func StudentWorkGetById(id int64) (studentWork *StudentWork, err error) {
+func (dbp *DBProvider) StudentWorkGetById(id int64) (studentWork *StudentWork, err error) {
 	studentWork = &StudentWork{}
-	db, err := DBGet()
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -158,8 +158,8 @@ func StudentWorkGetById(id int64) (studentWork *StudentWork, err error) {
 	}
 	return
 }
-func StudentWorkGetByStudentWorkType(studentWorkTypeId int64) (studentWorks []*StudentWork, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) StudentWorkGetByStudentWorkType(studentWorkTypeId int64) (studentWorks []*StudentWork, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -189,8 +189,8 @@ func StudentWorkGetByStudentWorkType(studentWorkTypeId int64) (studentWorks []*S
 	}
 	return
 }
-func StudentWorkGetByAuthor(authorId int64) (studentWorks []*StudentWork, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) StudentWorkGetByAuthor(authorId int64) (studentWorks []*StudentWork, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -220,8 +220,8 @@ func StudentWorkGetByAuthor(authorId int64) (studentWorks []*StudentWork, err er
 	}
 	return
 }
-func StudentWorkGetByResearchLine(researchLineId int64) (studentWorks []*StudentWork, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) StudentWorkGetByResearchLine(researchLineId int64) (studentWorks []*StudentWork, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -251,8 +251,8 @@ func StudentWorkGetByResearchLine(researchLineId int64) (studentWorks []*Student
 	}
 	return
 }
-func StudentWorkCount() (count int64, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) StudentWorkCount() (count int64, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -269,8 +269,8 @@ func StudentWorkCount() (count int64, err error) {
 	}
 	return
 }
-func StudentWorkExists(id int64) (exists bool, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) StudentWorkExists(id int64) (exists bool, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -292,8 +292,8 @@ func StudentWorkExists(id int64) (exists bool, err error) {
 	exists = true
 	return
 }
-func StudentWorkAddResearchLine(id, researchLineId int64, createdBy string) (verr *ValidationError, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) StudentWorkAddResearchLine(id, researchLineId int64, createdBy string) (verr *ValidationError, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -321,8 +321,8 @@ func StudentWorkAddResearchLine(id, researchLineId int64, createdBy string) (ver
 	}
 	return
 }
-func StudentWorkRemoveResearchLine(id, researchLineId int64) (removed bool, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) StudentWorkRemoveResearchLine(id, researchLineId int64) (removed bool, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -347,11 +347,11 @@ func StudentWorkRemoveResearchLine(id, researchLineId int64) (removed bool, err 
 	return
 }
 
-func StudentWorkGetResearchLines(id int64) (researchLines []*ResearchLine, err error) {
-	researchLines, err = ResearchLineGetByStudentWork(id)
+func (dbp *DBProvider) StudentWorkGetResearchLines(id int64) (researchLines []*ResearchLine, err error) {
+	researchLines, err = dbp.ResearchLineGetByStudentWork(id)
 	return
 }
-func StudentWorkGetColumns() []string {
+func (dbp *DBProvider) StudentWorkGetColumns() []string {
 	columns := []string{
 		"id",
 		"title",
@@ -367,35 +367,35 @@ func StudentWorkGetColumns() []string {
 	}
 	return columns
 }
-func StudentWorkValidateTitle(title string) (verr *ValidationError) {
-	if verr = ValidateNotEmpty("title", title); verr != nil {
+func studentWorkValidateTitle(title string) (verr *ValidationError) {
+	if verr = validateNotEmpty("title", title); verr != nil {
 		return verr
 	}
-	return ValidateLength("title", title, 200)
+	return validateLength("title", title, 200)
 }
-func StudentWorkValidateYear(year int64) (verr *ValidationError) {
-	return ValidateIsNumber("year", year)
+func studentWorkValidateYear(year int64) (verr *ValidationError) {
+	return validateIsNumber("year", year)
 }
-func StudentWorkValidateSchool(school string) (verr *ValidationError) {
-	return ValidateLength("school", school, 200)
+func studentWorkValidateSchool(school string) (verr *ValidationError) {
+	return validateLength("school", school, 200)
 }
-func StudentWorkValidateVolume(volume string) (verr *ValidationError) {
-	return ValidateLength("volume", volume, 200)
+func studentWorkValidateVolume(volume string) (verr *ValidationError) {
+	return validateLength("volume", volume, 200)
 }
-func StudentWorkValidate(title string, year int64, school, volume string) (verr *ValidationError) {
-	verr = StudentWorkValidateTitle(title)
+func studentWorkValidate(title string, year int64, school, volume string) (verr *ValidationError) {
+	verr = studentWorkValidateTitle(title)
 	if verr != nil {
 		return
 	}
-	verr = StudentWorkValidateYear(year)
+	verr = studentWorkValidateYear(year)
 	if verr != nil {
 		return
 	}
-	verr = StudentWorkValidateSchool(school)
+	verr = studentWorkValidateSchool(school)
 	if verr != nil {
 		return
 	}
-	verr = StudentWorkValidateVolume(volume)
+	verr = studentWorkValidateVolume(volume)
 	if verr != nil {
 		return
 	}

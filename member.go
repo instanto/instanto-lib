@@ -1,4 +1,4 @@
-package instanto_lib_db
+package instantolib
 
 import (
 	"time"
@@ -35,12 +35,12 @@ type Member struct {
 	RelFinancedProjectCreatedAt         int64  `json:"financed_project_created_at,omitempty"`
 }
 
-func MemberCreate(firstName, lastName, degree string, yearIn, yearOut int64, email, createdBy string, primaryStatus int64) (id int64, verr *ValidationError, err error) {
-	verr = MemberValidate(firstName, lastName, degree, yearIn, yearOut, email)
+func (dbp *DBProvider) MemberCreate(firstName, lastName, degree string, yearIn, yearOut int64, email, createdBy string, primaryStatus int64) (id int64, verr *ValidationError, err error) {
+	verr = memberValidate(firstName, lastName, degree, yearIn, yearOut, email)
 	if verr != nil {
 		return
 	}
-	db, err := DBGet()
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -67,12 +67,12 @@ func MemberCreate(firstName, lastName, degree string, yearIn, yearOut int64, ema
 	}
 	return
 }
-func MemberUpdate(id int64, firstName, lastName, degree string, yearIn, yearOut int64, email, updatedBy string, primaryStatus int64) (numRows int64, verr *ValidationError, err error) {
-	verr = MemberValidate(firstName, lastName, degree, yearIn, yearOut, email)
+func (dbp *DBProvider) MemberUpdate(id int64, firstName, lastName, degree string, yearIn, yearOut int64, email, updatedBy string, primaryStatus int64) (numRows int64, verr *ValidationError, err error) {
+	verr = memberValidate(firstName, lastName, degree, yearIn, yearOut, email)
 	if verr != nil {
 		return
 	}
-	db, err := DBGet()
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -99,8 +99,8 @@ func MemberUpdate(id int64, firstName, lastName, degree string, yearIn, yearOut 
 	}
 	return
 }
-func MemberUpdateCv(id int64, cv string, updatedBy string) (numRows int64, verr *ValidationError, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) MemberUpdateCv(id int64, cv string, updatedBy string) (numRows int64, verr *ValidationError, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -127,8 +127,8 @@ func MemberUpdateCv(id int64, cv string, updatedBy string) (numRows int64, verr 
 	}
 	return
 }
-func MemberUpdatePhoto(id int64, photo string, updatedBy string) (numRows int64, verr *ValidationError, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) MemberUpdatePhoto(id int64, photo string, updatedBy string) (numRows int64, verr *ValidationError, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -155,8 +155,8 @@ func MemberUpdatePhoto(id int64, photo string, updatedBy string) (numRows int64,
 	}
 	return
 }
-func MemberDelete(id int64) (numRows int64, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) MemberDelete(id int64) (numRows int64, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -177,8 +177,8 @@ func MemberDelete(id int64) (numRows int64, err error) {
 	}
 	return
 }
-func MemberGetAll() (members []*Member, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) MemberGetAll() (members []*Member, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -208,9 +208,9 @@ func MemberGetAll() (members []*Member, err error) {
 	}
 	return
 }
-func MemberGetById(id int64) (member *Member, err error) {
+func (dbp *DBProvider) MemberGetById(id int64) (member *Member, err error) {
 	member = &Member{}
-	db, err := DBGet()
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -227,8 +227,8 @@ func MemberGetById(id int64) (member *Member, err error) {
 	}
 	return
 }
-func MemberGetByPrimaryStatus(statusId int64) (members []*Member, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) MemberGetByPrimaryStatus(statusId int64) (members []*Member, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -258,8 +258,8 @@ func MemberGetByPrimaryStatus(statusId int64) (members []*Member, err error) {
 	}
 	return
 }
-func MemberGetByStatus(statusId int64) (members []*Member, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) MemberGetByStatus(statusId int64) (members []*Member, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -289,8 +289,8 @@ func MemberGetByStatus(statusId int64) (members []*Member, err error) {
 	}
 	return
 }
-func MemberGetByPartner(partnerId int64) (members []*Member, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) MemberGetByPartner(partnerId int64) (members []*Member, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -320,8 +320,8 @@ func MemberGetByPartner(partnerId int64) (members []*Member, err error) {
 	}
 	return
 }
-func MemberGetByPublication(publicationId int64) (members []*Member, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) MemberGetByPublication(publicationId int64) (members []*Member, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -352,8 +352,8 @@ func MemberGetByPublication(publicationId int64) (members []*Member, err error) 
 	return
 }
 
-func MemberGetByResearchLine(researchLineId int64) (members []*Member, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) MemberGetByResearchLine(researchLineId int64) (members []*Member, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -383,8 +383,8 @@ func MemberGetByResearchLine(researchLineId int64) (members []*Member, err error
 	}
 	return
 }
-func MemberGetByFinancedProjectAsLeader(financedProjectId int64) (members []*Member, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) MemberGetByFinancedProjectAsLeader(financedProjectId int64) (members []*Member, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -414,8 +414,8 @@ func MemberGetByFinancedProjectAsLeader(financedProjectId int64) (members []*Mem
 	}
 	return
 }
-func MemberGetByFinancedProject(financedProjectId int64) (members []*Member, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) MemberGetByFinancedProject(financedProjectId int64) (members []*Member, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -445,8 +445,8 @@ func MemberGetByFinancedProject(financedProjectId int64) (members []*Member, err
 	}
 	return
 }
-func MemberCount() (count int64, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) MemberCount() (count int64, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -463,8 +463,8 @@ func MemberCount() (count int64, err error) {
 	}
 	return
 }
-func MemberExists(id int64) (exists bool, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) MemberExists(id int64) (exists bool, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -487,8 +487,8 @@ func MemberExists(id int64) (exists bool, err error) {
 	return
 }
 
-func MemberAddStatus(id, statusId int64, createdBy string) (verr *ValidationError, err error) {
-	member, err := MemberGetById(id)
+func (dbp *DBProvider) MemberAddStatus(id, statusId int64, createdBy string) (verr *ValidationError, err error) {
+	member, err := dbp.MemberGetById(id)
 	if err != nil {
 		return
 	}
@@ -496,7 +496,7 @@ func MemberAddStatus(id, statusId int64, createdBy string) (verr *ValidationErro
 		verr = &ValidationError{"status", "this status is already the primary"}
 		return
 	}
-	db, err := DBGet()
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -524,8 +524,8 @@ func MemberAddStatus(id, statusId int64, createdBy string) (verr *ValidationErro
 	}
 	return
 }
-func MemberRemoveStatus(id, statusId int64) (removed bool, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) MemberRemoveStatus(id, statusId int64) (removed bool, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -550,12 +550,12 @@ func MemberRemoveStatus(id, statusId int64) (removed bool, err error) {
 	return
 }
 
-func MemberGetStatuses(id int64) (statuses []*Status, err error) {
-	statuses, err = StatusGetByMember(id)
+func (dbp *DBProvider) MemberGetStatuses(id int64) (statuses []*Status, err error) {
+	statuses, err = dbp.StatusGetByMember(id)
 	return
 }
-func MemberAddPartner(id, partnerId int64, createdBy string) (verr *ValidationError, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) MemberAddPartner(id, partnerId int64, createdBy string) (verr *ValidationError, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -583,8 +583,8 @@ func MemberAddPartner(id, partnerId int64, createdBy string) (verr *ValidationEr
 	}
 	return
 }
-func MemberRemovePartner(id, partnerId int64) (removed bool, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) MemberRemovePartner(id, partnerId int64) (removed bool, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -609,12 +609,12 @@ func MemberRemovePartner(id, partnerId int64) (removed bool, err error) {
 	return
 }
 
-func MemberGetPartners(id int64) (partners []*Partner, err error) {
-	partners, err = PartnerGetByMember(id)
+func (dbp *DBProvider) MemberGetPartners(id int64) (partners []*Partner, err error) {
+	partners, err = dbp.PartnerGetByMember(id)
 	return
 }
-func MemberAddPublication(id, publicationId int64, createdBy string) (verr *ValidationError, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) MemberAddPublication(id, publicationId int64, createdBy string) (verr *ValidationError, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -642,8 +642,8 @@ func MemberAddPublication(id, publicationId int64, createdBy string) (verr *Vali
 	}
 	return
 }
-func MemberRemovePublication(id, publicationId int64) (removed bool, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) MemberRemovePublication(id, publicationId int64) (removed bool, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -668,12 +668,12 @@ func MemberRemovePublication(id, publicationId int64) (removed bool, err error) 
 	return
 }
 
-func MemberGetPublications(id int64) (publications []*Publication, err error) {
-	publications, err = PublicationGetByMember(id)
+func (dbp *DBProvider) MemberGetPublications(id int64) (publications []*Publication, err error) {
+	publications, err = dbp.PublicationGetByMember(id)
 	return
 }
-func MemberAddResearchLine(id, researchLineId int64, createdBy string) (verr *ValidationError, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) MemberAddResearchLine(id, researchLineId int64, createdBy string) (verr *ValidationError, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -701,8 +701,8 @@ func MemberAddResearchLine(id, researchLineId int64, createdBy string) (verr *Va
 	}
 	return
 }
-func MemberRemoveResearchLine(id, researchLineId int64) (removed bool, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) MemberRemoveResearchLine(id, researchLineId int64) (removed bool, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -727,12 +727,12 @@ func MemberRemoveResearchLine(id, researchLineId int64) (removed bool, err error
 	return
 }
 
-func MemberGetResearchLines(id int64) (researchLines []*ResearchLine, err error) {
-	researchLines, err = ResearchLineGetByMember(id)
+func (dbp *DBProvider) MemberGetResearchLines(id int64) (researchLines []*ResearchLine, err error) {
+	researchLines, err = dbp.ResearchLineGetByMember(id)
 	return
 }
-func MemberAddFinancedProjectAsLeader(id, financedProjectId int64, createdBy string) (verr *ValidationError, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) MemberAddFinancedProjectAsLeader(id, financedProjectId int64, createdBy string) (verr *ValidationError, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -760,8 +760,8 @@ func MemberAddFinancedProjectAsLeader(id, financedProjectId int64, createdBy str
 	}
 	return
 }
-func MemberRemoveFinancedProjectAsLeader(id, financedProjectId int64) (removed bool, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) MemberRemoveFinancedProjectAsLeader(id, financedProjectId int64) (removed bool, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -786,12 +786,12 @@ func MemberRemoveFinancedProjectAsLeader(id, financedProjectId int64) (removed b
 	return
 }
 
-func MemberGetFinancedProjectsAsLeader(id int64) (financedProjects []*FinancedProject, err error) {
-	financedProjects, err = FinancedProjectGetByLeader(id)
+func (dbp *DBProvider) MemberGetFinancedProjectsAsLeader(id int64) (financedProjects []*FinancedProject, err error) {
+	financedProjects, err = dbp.FinancedProjectGetByLeader(id)
 	return
 }
-func MemberAddFinancedProject(id, financedProjectId int64, createdBy string) (verr *ValidationError, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) MemberAddFinancedProject(id, financedProjectId int64, createdBy string) (verr *ValidationError, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -819,8 +819,8 @@ func MemberAddFinancedProject(id, financedProjectId int64, createdBy string) (ve
 	}
 	return
 }
-func MemberRemoveFinancedProject(id, financedProjectId int64) (removed bool, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) MemberRemoveFinancedProject(id, financedProjectId int64) (removed bool, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -845,16 +845,16 @@ func MemberRemoveFinancedProject(id, financedProjectId int64) (removed bool, err
 	return
 }
 
-func MemberGetFinancedProjects(id int64) (financedProjects []*FinancedProject, err error) {
-	financedProjects, err = FinancedProjectGetByMember(id)
+func (dbp *DBProvider) MemberGetFinancedProjects(id int64) (financedProjects []*FinancedProject, err error) {
+	financedProjects, err = dbp.FinancedProjectGetByMember(id)
 	return
 }
-func MemberGetStudentWorks(id int64) (studentWorks []*StudentWork, err error) {
-	studentWorks, err = StudentWorkGetByAuthor(id)
+func (dbp *DBProvider) MemberGetStudentWorks(id int64) (studentWorks []*StudentWork, err error) {
+	studentWorks, err = dbp.StudentWorkGetByAuthor(id)
 	return
 }
 
-func MemberGetColumns() []string {
+func (dbp *DBProvider) MemberGetColumns() []string {
 	columns := []string{
 		"id",
 		"first_name",
@@ -872,52 +872,52 @@ func MemberGetColumns() []string {
 	}
 	return columns
 }
-func MemberValidateFirstName(firstName string) (verr *ValidationError) {
-	if verr = ValidateNotEmpty("first_name", firstName); verr != nil {
+func memberValidateFirstName(firstName string) (verr *ValidationError) {
+	if verr = validateNotEmpty("first_name", firstName); verr != nil {
 		return verr
 	}
-	return ValidateLength("first_name", firstName, 200)
+	return validateLength("first_name", firstName, 200)
 }
-func MemberValidateLastName(lastName string) (verr *ValidationError) {
-	if verr = ValidateNotEmpty("last_name", lastName); verr != nil {
+func memberValidateLastName(lastName string) (verr *ValidationError) {
+	if verr = validateNotEmpty("last_name", lastName); verr != nil {
 		return verr
 	}
-	return ValidateLength("last_name", lastName, 200)
+	return validateLength("last_name", lastName, 200)
 }
-func MemberValidateDegree(degree string) (verr *ValidationError) {
-	return ValidateDegree("degree", degree)
+func memberValidateDegree(degree string) (verr *ValidationError) {
+	return validateDegree("degree", degree)
 }
-func MemberValidateYearIn(yearIn int64) (verr *ValidationError) {
-	return ValidateIsNumber("year_in", yearIn)
+func memberValidateYearIn(yearIn int64) (verr *ValidationError) {
+	return validateIsNumber("year_in", yearIn)
 }
-func MemberValidateYearOut(yearOut int64) (verr *ValidationError) {
-	return ValidateIsNumber("year_out", yearOut)
+func memberValidateYearOut(yearOut int64) (verr *ValidationError) {
+	return validateIsNumber("year_out", yearOut)
 }
-func MemberValidateEmail(email string) (verr *ValidationError) {
-	return ValidateLength("email", email, 200)
+func memberValidateEmail(email string) (verr *ValidationError) {
+	return validateLength("email", email, 200)
 }
-func MemberValidate(firstName, lastName, degree string, yearIn, yearOut int64, email string) (verr *ValidationError) {
-	verr = MemberValidateFirstName(firstName)
+func memberValidate(firstName, lastName, degree string, yearIn, yearOut int64, email string) (verr *ValidationError) {
+	verr = memberValidateFirstName(firstName)
 	if verr != nil {
 		return
 	}
-	verr = MemberValidateLastName(lastName)
+	verr = memberValidateLastName(lastName)
 	if verr != nil {
 		return
 	}
-	verr = MemberValidateDegree(degree)
+	verr = memberValidateDegree(degree)
 	if verr != nil {
 		return
 	}
-	verr = MemberValidateYearIn(yearIn)
+	verr = memberValidateYearIn(yearIn)
 	if verr != nil {
 		return
 	}
-	verr = MemberValidateYearOut(yearOut)
+	verr = memberValidateYearOut(yearOut)
 	if verr != nil {
 		return
 	}
-	verr = MemberValidateEmail(email)
+	verr = memberValidateEmail(email)
 	if verr != nil {
 		return
 	}

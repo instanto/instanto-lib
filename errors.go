@@ -1,4 +1,4 @@
-package instanto_lib_db
+package instantolib
 
 type ValidationError struct {
 	Field  string `json:"field"`

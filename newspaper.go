@@ -1,4 +1,4 @@
-package instanto_lib_db
+package instantolib
 
 import (
 	"time"
@@ -17,12 +17,12 @@ type Newspaper struct {
 	UpdatedAt int64  `json:"updated_at"`
 }
 
-func NewspaperCreate(name, web, createdBy string) (id int64, verr *ValidationError, err error) {
-	verr = NewspaperValidate(name, web)
+func (dbp *DBProvider) NewspaperCreate(name, web, createdBy string) (id int64, verr *ValidationError, err error) {
+	verr = newspaperValidate(name, web)
 	if verr != nil {
 		return
 	}
-	db, err := DBGet()
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -49,12 +49,12 @@ func NewspaperCreate(name, web, createdBy string) (id int64, verr *ValidationErr
 	}
 	return
 }
-func NewspaperUpdate(id int64, name, web, updatedBy string) (numRows int64, verr *ValidationError, err error) {
-	verr = NewspaperValidate(name, web)
+func (dbp *DBProvider) NewspaperUpdate(id int64, name, web, updatedBy string) (numRows int64, verr *ValidationError, err error) {
+	verr = newspaperValidate(name, web)
 	if verr != nil {
 		return
 	}
-	db, err := DBGet()
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -82,8 +82,8 @@ func NewspaperUpdate(id int64, name, web, updatedBy string) (numRows int64, verr
 	return
 }
 
-func NewspaperUpdateLogo(id int64, logo string, updatedBy string) (numRows int64, verr *ValidationError, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) NewspaperUpdateLogo(id int64, logo string, updatedBy string) (numRows int64, verr *ValidationError, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -111,8 +111,8 @@ func NewspaperUpdateLogo(id int64, logo string, updatedBy string) (numRows int64
 	return
 }
 
-func NewspaperDelete(id int64) (numRows int64, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) NewspaperDelete(id int64) (numRows int64, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -133,8 +133,8 @@ func NewspaperDelete(id int64) (numRows int64, err error) {
 	}
 	return
 }
-func NewspaperGetAll() (newspapers []*Newspaper, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) NewspaperGetAll() (newspapers []*Newspaper, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -164,9 +164,9 @@ func NewspaperGetAll() (newspapers []*Newspaper, err error) {
 	}
 	return
 }
-func NewspaperGetById(id int64) (newspaper *Newspaper, err error) {
+func (dbp *DBProvider) NewspaperGetById(id int64) (newspaper *Newspaper, err error) {
 	newspaper = &Newspaper{}
-	db, err := DBGet()
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -183,8 +183,8 @@ func NewspaperGetById(id int64) (newspaper *Newspaper, err error) {
 	}
 	return
 }
-func NewspaperCount() (count int64, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) NewspaperCount() (count int64, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -201,8 +201,8 @@ func NewspaperCount() (count int64, err error) {
 	}
 	return
 }
-func NewspaperExists(id int64) (exists bool, err error) {
-	db, err := DBGet()
+func (dbp *DBProvider) NewspaperExists(id int64) (exists bool, err error) {
+	db, err := dbp.getDB()
 	if err != nil {
 		return
 	}
@@ -224,11 +224,11 @@ func NewspaperExists(id int64) (exists bool, err error) {
 	exists = true
 	return
 }
-func NewspaperGetArticles(id int64) (articles []*Article, err error) {
-	articles, err = ArticleGetByNewspaper(id)
+func (dbp *DBProvider) NewspaperGetArticles(id int64) (articles []*Article, err error) {
+	articles, err = dbp.ArticleGetByNewspaper(id)
 	return
 }
-func NewspaperGetColumns() []string {
+func (dbp *DBProvider) NewspaperGetColumns() []string {
 	columns := []string{
 		"id",
 		"name",
@@ -241,24 +241,24 @@ func NewspaperGetColumns() []string {
 	}
 	return columns
 }
-func NewspaperValidateName(name string) (verr *ValidationError) {
-	if verr = ValidateNotEmpty("name", name); verr != nil {
+func newspaperValidateName(name string) (verr *ValidationError) {
+	if verr = validateNotEmpty("name", name); verr != nil {
 		return verr
 	}
-	return ValidateLength("name", name, 200)
+	return validateLength("name", name, 200)
 }
-func NewspaperValidateWeb(web string) (verr *ValidationError) {
-	return ValidateLength("web", web, 200)
+func newspaperValidateWeb(web string) (verr *ValidationError) {
+	return validateLength("web", web, 200)
 }
-func NewspaperValidateLogo(logo string) (err *ValidationError) {
-	return ValidateLength("logo", logo, 200)
+func newspaperValidateLogo(logo string) (err *ValidationError) {
+	return validateLength("logo", logo, 200)
 }
-func NewspaperValidate(name, web string) (verr *ValidationError) {
-	verr = NewspaperValidateName(name)
+func newspaperValidate(name, web string) (verr *ValidationError) {
+	verr = newspaperValidateName(name)
 	if verr != nil {
 		return
 	}
-	verr = NewspaperValidateWeb(web)
+	verr = newspaperValidateWeb(web)
 	if verr != nil {
 		return
 	}
