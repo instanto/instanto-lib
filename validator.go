@@ -16,7 +16,7 @@ func validateScope(field, value string) *ValidationError {
 	return nil
 }
 func validateNotEmpty(field, value string) *ValidationError {
-	if len(field) == 0 {
+	if len(value) == 0 {
 		return &ValidationError{field, "cannot be empty"}
 	}
 	return nil
