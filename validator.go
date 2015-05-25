@@ -23,7 +23,7 @@ func validateNotEmpty(field, value string) *ValidationError {
 }
 func validateIsNumber(field string, value int64) *ValidationError {
 	if value < 0 {
-		return &ValidationError{field, fmt.Sprintf("must be greater than %d", value)}
+		return &ValidationError{field, fmt.Sprintf("must be greater than 0")}
 	}
 	return nil
 }
