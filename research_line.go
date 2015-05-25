@@ -936,7 +936,7 @@ func researchLineValidateTitle(title string) (verr *ValidationError) {
 	return validateLength("title", title, 200)
 }
 func researchLineValidateDescription(description string) (verr *ValidationError) {
-	return validateLength("description", description, 200)
+	return validateLength("description", description, 65000)
 }
 func researchLineValidate(title, description string) (verr *ValidationError) {
 	verr = researchLineValidateTitle(title)
