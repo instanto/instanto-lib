@@ -73,8 +73,8 @@ func (dbp *DBProvider) UserGetByUsername(username string) (user *User, err error
 	}
 	return
 }
-func (dbp *DBProvider) UserCheckLogin(username, password string) (verr *ValidationError, err error) {
-	user, err := dbp.UserGetByUsername(username)
+func (dbp *DBProvider) UserCheckLogin(username, password string) (user *User, verr *ValidationError, err error) {
+	user, err = dbp.UserGetByUsername(username)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			err = nil
