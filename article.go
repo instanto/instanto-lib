@@ -112,7 +112,7 @@ func (dbp *DBProvider) ArticleGetAll() (articles []*Article, err error) {
 		return
 	}
 	defer db.Close()
-	query := "SELECT * FROM article"
+	query := "SELECT * FROM article ORDER BY date DESC"
 	stmt, err := db.Prepare(query)
 	if err != nil {
 		return
@@ -162,7 +162,7 @@ func (dbp *DBProvider) ArticleGetByNewspaper(newspaperId int64) (articles []*Art
 		return
 	}
 	defer db.Close()
-	query := "SELECT * FROM article WHERE newspaper=?"
+	query := "SELECT * FROM article WHERE newspaper=? ORDER BY date DESC"
 	stmt, err := db.Prepare(query)
 	if err != nil {
 		return
@@ -193,7 +193,7 @@ func (dbp *DBProvider) ArticleGetByResearchLine(researchLineId int64) (articles 
 		return
 	}
 	defer db.Close()
-	query := "SELECT article.*,research_line_article.created_by,research_line_article.created_at FROM research_line_article INNER JOIN article ON research_line_article.article=article.id  WHERE research_line=?"
+	query := "SELECT article.*,research_line_article.created_by,research_line_article.created_at FROM research_line_article INNER JOIN article ON research_line_article.article=article.id  WHERE research_line=? ORDER BY date DESC"
 	stmt, err := db.Prepare(query)
 	if err != nil {
 		return
