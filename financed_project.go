@@ -20,7 +20,7 @@ type FinancedProject struct {
 	PrimaryFundingBody         int64  `json:"primary_funding_body"`
 	PrimaryRecord              string `json:"primary_record"`
 	PrimaryLeader              int64  `json:"primary_leader"`
-	RelFundingBodyRecord       string `json:"funding_body_record,omitempty"`
+	RelFundingBodyRecord       string `json:"funding_body_record"`
 	RelFundingBodyCreatedBy    string `json:"funding_body_created_by,omitempty"`
 	RelFundingBodyUpdatedBy    string `json:"funding_body_updated_by,omitempty"`
 	RelFundingBodyCreatedAt    int64  `json:"funding_body_created_at,omitempty"`
