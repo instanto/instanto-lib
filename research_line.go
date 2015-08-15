@@ -31,6 +31,8 @@ type ResearchLine struct {
 	RelMemberCreatedAt          int64  `json:"member_created_at,omitempty"`
 	RelArticleCreatedBy         string `json:"article_created_by,omitempty"`
 	RelArticleCreatedAt         int64  `json:"article_created_at,omitempty"`
+	RelResourceCreatedBy        string `json:"resource_created_by,omitempty"`
+	RelResourceCreatedAt        int64  `json:"resource_created_at,omitempty"`
 }
 
 func (dbp *DBProvider) ResearchLineCreate(title string, finished bool, description, createdBy string, primaryResearchArea int64) (id int64, verr *ValidationError, err error) {
@@ -436,6 +438,37 @@ func (dbp *DBProvider) ResearchLineGetByArticle(articleId int64) (researchLines 
 	for rows.Next() {
 		p := ResearchLine{}
 		err = rows.Scan(&p.Id, &p.Title, &p.Finished, &p.Description, &p.Logo, &p.CreatedBy, &p.UpdatedBy, &p.CreatedAt, &p.UpdatedAt, &p.PrimaryResearchArea, &p.RelArticleCreatedBy, &p.RelArticleCreatedAt)
+		if err != nil {
+			return
+		}
+		researchLines = append(researchLines, &p)
+	}
+	err = rows.Err()
+	if err != nil {
+		return
+	}
+	return
+}
+func (dbp *DBProvider) ResearchLineGetByResource(resourceId int64) (researchLines []*ResearchLine, err error) {
+	db, err := dbp.getDB()
+	if err != nil {
+		return
+	}
+	defer db.Close()
+	query := "SELECT research_line.*,research_line_resource.created_by,research_line_resource.created_at FROM research_line_resource INNER JOIN research_line ON research_line_resource.research_line=research_line.id  WHERE resource=?"
+	stmt, err := db.Prepare(query)
+	if err != nil {
+		return
+	}
+	defer stmt.Close()
+	rows, err := stmt.Query(resourceId)
+	if err != nil {
+		return
+	}
+	defer rows.Close()
+	for rows.Next() {
+		p := ResearchLine{}
+		err = rows.Scan(&p.Id, &p.Title, &p.Finished, &p.Description, &p.Logo, &p.CreatedBy, &p.UpdatedBy, &p.CreatedAt, &p.UpdatedAt, &p.PrimaryResearchArea, &p.RelResourceCreatedBy, &p.RelResourceCreatedAt)
 		if err != nil {
 			return
 		}
