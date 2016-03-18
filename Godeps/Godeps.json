@@ -1,0 +1,19 @@
+{
+	"ImportPath": "github.com/labkode/instanto-lib",
+	"GoVersion": "go1.6",
+	"Deps": [
+		{
+			"ImportPath": "github.com/go-sql-driver/mysql",
+			"Comment": "v1.2-188-g66312f7",
+			"Rev": "66312f7fe2678aa0f5ec770f96702f4c4ec5aa8e"
+		},
+		{
+			"ImportPath": "golang.org/x/crypto/bcrypt",
+			"Rev": "c197bcf24cde29d3f73c7b4ac6fd41f4384e8af6"
+		},
+		{
+			"ImportPath": "golang.org/x/crypto/blowfish",
+			"Rev": "c197bcf24cde29d3f73c7b4ac6fd41f4384e8af6"
+		}
+	]
+}
